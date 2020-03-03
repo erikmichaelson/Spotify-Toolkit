@@ -1,9 +1,8 @@
 import React, { Component } from "react";
+import SpotifyPlayer from "react-spotify-web-playback";
 import * as $ from "jquery";
 import { authEndpoint, clientId, redirectUri, scopes } from "./config";
 import hash from "./hash";
-import Player from "./Player";
-import logo from "./logo.svg";
 import "./App.css";
 
 class App extends Component {
@@ -11,19 +10,12 @@ class App extends Component {
     super();
     this.state = {
       token: null,
-      item: {
-        album: {
-          images: [{ url: "" }]
-        },
-        name: "",
-        artists: [{ name: "" }],
-        duration_ms: 0
-      },
-      is_playing: "Paused",
-      progress_ms: 0
+      uris: [],
+      playlists: []
     };
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
   }
+
   componentDidMount() {
     // Set token
     let _token = hash.access_token;
@@ -34,7 +26,32 @@ class App extends Component {
         token: _token
       });
       this.getCurrentlyPlaying(_token);
+      this.getUserPlaylists(_token);
     }
+  }
+
+  getUserPlaylists(token) {
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/playlists",
+      type: "GET",
+      beforeSend: xhr => {
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+      },
+      success: data => {
+        console.log(data);
+
+        if (!data) {
+          return;
+        }
+        var playlistNames = [];
+        data.items.forEach(playlist => {
+          playlistNames.push(playlist.name);
+        });
+        this.setState({
+          playlists: playlistNames
+        });
+      }
+    });
   }
 
   getCurrentlyPlaying(token) {
@@ -46,16 +63,22 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
       },
       success: data => {
+        console.log(data);
 
-        if(!data){
-          return
+        if (!data) {
+          return;
         }
 
         this.setState({
-          item: data.item,
-          is_playing: data.is_playing,
-          progress_ms: data.progress_ms
+          uris: [
+            data.context.uri,
+            data.item.uri,
+            data.item.artists[0].uri,
+            data.item.album.uri
+          ]
         });
+
+        console.log(this.state.uris);
       }
     });
   }
@@ -63,8 +86,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+
+<header className="App-header">
+        <h1 className="banner"> The Spotify Toolkit </h1>
+        </header>
+        <div className="login-button">
           {!this.state.token && (
             <a
               className="btn btn--loginApp-link"
@@ -75,14 +101,34 @@ class App extends Component {
               Login to Spotify
             </a>
           )}
-          {this.state.token && (
-            <Player
-              item={this.state.item}
-              is_playing={this.state.is_playing}
-              progress_ms={this.progress_ms}
+        </div>
+
+        {this.state.token && (
+          <div>
+            <div className="playlists">
+              <h3 className="your-playlists"> Your Playlists</h3>
+              <ul>
+                {this.state.playlists.map(function(song, i) {
+                  return <li className="playlist"> {song} </li>;
+                })}
+              </ul>
+            </div>
+            <SpotifyPlayer
+              token={this.state.token}
+              uris={this.state.uris}
+              className="webPlayer"
+              styles={{
+                bgColor: "#333",
+                color: "#fff",
+                loaderColor: "#fff",
+                sliderColor: "#1cb954",
+                savedColor: "#fff",
+                trackArtistColor: "#ccc",
+                trackNameColor: "#fff"
+              }}
             />
-          )}
-        </header>
+          </div>
+        )}
       </div>
     );
   }
