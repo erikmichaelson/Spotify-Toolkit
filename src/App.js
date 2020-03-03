@@ -5,7 +5,7 @@ import hash from "./hash";
 import Player from "./Player";
 import logo from "./logo.svg";
 import "./App.css";
-
+//much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
 class App extends Component {
   constructor() {
     super();
