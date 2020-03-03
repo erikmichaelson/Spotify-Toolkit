@@ -46,6 +46,11 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
       },
       success: data => {
+
+        if(!data){
+          return
+        }
+
         this.setState({
           item: data.item,
           is_playing: data.is_playing,
