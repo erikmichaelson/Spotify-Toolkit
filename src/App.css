@@ -2,7 +2,7 @@
  text-align: center;
  background-color: #282c34;
  min-height: 100vh;
- 
+
 }
 
 .App-header {
@@ -15,9 +15,18 @@
   color: white;
 }
 
+.grid-container {
+  display: grid;
+  grid-auto-columns: 50%;
+}
 
 .webPlayer{
   size:20%;
+}
+
+._PlayerRSWP {
+  position: fixed;
+  bottom: 0;
 }
 
 .your-playlists{
@@ -28,6 +37,7 @@
 }
 
 .playlists {
+  grid-area: 1 / 1;
   color:white;
 }
 
@@ -36,6 +46,10 @@
   margin-bottom: 10px;
 }
 
+.venn {
+  grid-area: 1 / 2;
+  background-color: red;
+}
 
 .banner {
   color: #1ecd97;
@@ -63,4 +77,3 @@
 .btn--login {
   margin: 0 auto;
 }
-

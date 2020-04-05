@@ -4,6 +4,7 @@ import * as $ from "jquery";
 import { authEndpoint, clientId, redirectUri, scopes } from "./config";
 import hash from "./hash";
 import "./App.css";
+import * as venn from "venn.js"
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
 class App extends Component {
   constructor() {
@@ -30,6 +31,8 @@ class App extends Component {
     }
   }
 
+  // this method gets the current playlists and puts them in state's
+  // playlist variable
   getUserPlaylists(token) {
     $.ajax({
       url: "https://api.spotify.com/v1/me/playlists",
@@ -83,12 +86,34 @@ class App extends Component {
     });
   }
 
+	// inspired by the React Tutorial on facebook's website
+	// this code *should* creat a venn.js object for each playlist
+	// in the user's library
+/*	class Visualizer extends React.Component {
+		// i'm way over my head
+
+		render() {
+			return(<div id="venn">
+				</div>
+			)
+		}
+	}    */
+
   render() {
+
+  	var sets = [ {sets: ['A'], size: 12},
+        {sets: ['B'], size: 12},
+        {sets: ['A','B'], size: 2}];
+
+	var chart = venn.VennDiagram()
+
+   function showPlaylist() { document.getElementById('venn').innerHTML = "hello"; }
+
     return (
       <div className="App">
 
-<header className="App-header">
-        <h1 className="banner"> The Spotify Toolkit </h1>
+		<header className="App-header">
+       		<h1 className="banner"> The Spotify Toolkit </h1>
         </header>
         <div className="login-button">
           {!this.state.token && (
@@ -104,15 +129,23 @@ class App extends Component {
         </div>
 
         {this.state.token && (
+
           <div>
-            <div className="playlists">
-              <h3 className="your-playlists"> Your Playlists</h3>
-              <ul>
-                {this.state.playlists.map(function(song, i) {
-                  return <li className="playlist"> {song} </li>;
-                })}
-              </ul>
+            <div className="grid-container">
+              <div className="playlists">
+                <h3 className="your-playlists"> Your Playlists</h3>
+
+                <ul>
+                  {this.state.playlists.map(function(song, i) {
+                    return <li className="playlist"><button onclick="showPlaylist()"> {song} </button></li>;
+                  })}
+                </ul>
+              </div>
+
+        			<div className="venn" id="venn">Test</div>
             </div>
+
+
             <SpotifyPlayer
               token={this.state.token}
               uris={this.state.uris}
