@@ -1,7 +1,7 @@
 .App {
  text-align: center;
  background-color: #282c34;
- min-height: 100vh;
+ min-height: 150vh;
 
 }
 
@@ -16,9 +16,100 @@
 }
 
 .grid-container {
+  margin-top: 50px;
   display: grid;
   grid-auto-columns: 50%;
+  grid-auto-rows: 50%;
+  grid-column-gap: 30px;
+  grid-row-gap: 10px;
+
+  grid-template-areas: 
+  "a b"
+  "c d";
+
 }
+
+
+.selectedPlaylists {
+  grid-area: a;
+  color:white;
+  overflow:scroll;
+  height: 400px;
+  width: 800px;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  
+}
+
+
+.selectPlaylists {
+  grid-area: c;
+  color:white;
+  overflow:scroll;
+  height: 500px;
+  width: 800px;
+  box-shadow: 0px 5px 0px  5px ;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  
+}
+
+.venn {
+  grid-area: b;
+  color:white;
+  overflow:scroll;
+  height: 400px;
+  width: 800px;
+  border-radius: 10px;
+
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  
+}
+
+.playlistPreview {
+  grid-area: d;
+  color:white;
+  overflow:scroll;
+  height: 500px;
+  width: 800px;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  
+}
+
+
+.playlist-select-list{
+  margin-left: 0;
+  margin-right: 0;
+  padding: 10px;
+}
+
+.playlist-preview-list{
+  margin-left: 0;
+  margin-right: 0;
+  padding: 10px;
+}
+
+
+.playlist{
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+
+}
+
+.song{
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+
+.playlist-button-group {
+  margin-left: 10px;
+}
+
+
+
 
 .webPlayer{
   size:20%;
@@ -29,27 +120,7 @@
   bottom: 0;
 }
 
-.your-playlists{
-  color:white;
-  text-align:center;
-  margin-bottom:10px;
-  margin-top:0px;
-}
 
-.playlists {
-  grid-area: 1 / 1;
-  color:white;
-}
-
-.playlist {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.venn {
-  grid-area: 1 / 2;
-  background-color: red;
-}
 
 .banner {
   color: #1ecd97;
@@ -67,6 +138,11 @@
   padding: 0.7em 1.5em;
   text-transform: uppercase;
   transition: all 0.25s ease;
+  
+}
+
+.login-button{
+  margin-top: 50px;
 }
 
 .btn:hover {
