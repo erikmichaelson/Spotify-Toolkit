@@ -8,8 +8,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import hash from "./hash";
 import Venn from "./Venn.js";
+import SearchField from "react-search-field";
 import "./App.css";
-import ReactSearchBox from "react-search-box";
+
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
 
 class App extends Component {
@@ -21,14 +22,17 @@ class App extends Component {
       yourPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
-      selectedPreviewedPlaylist: ""
+      selectedPreviewedPlaylist: "",
+      searchedPlaylists: [],
     };
 
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
     this.addSelectedPlaylist = this.addSelectedPlaylist.bind(this);
     this.removeSelectedPlaylist = this.removeSelectedPlaylist.bind(this);
     this.showPlaylist = this.showPlaylist.bind(this);
-    this.getPlaylistTracks = this.getPlaylistTracks;
+    this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
+    this.search = this.search.bind(this);
+    this.addToPool = this.addToPool.bind(this);
   }
 
   componentDidMount() {
@@ -134,8 +138,8 @@ class App extends Component {
 
   showPlaylist(playlist) {
     this.setState({
-      selectedPreviewedPlaylist: playlist.name
-    })
+      selectedPreviewedPlaylist: playlist.name,
+    });
     this.getPlaylistTracks(playlist);
   }
 
@@ -171,6 +175,51 @@ class App extends Component {
         this.forceUpdate();
       },
     });
+  }
+
+  search(value) {
+    console.log("hi");
+    var searchCleaned = value.replace(" ", "%20") + "&type=playlist";
+    $.ajax({
+      url: "https://api.spotify.com/v1/search?q=" + searchCleaned,
+      type: "GET",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      success: (data) => {
+        console.log(data);
+        if (!data) {
+          return;
+        }
+        var playlistNames = [];
+        data.playlists.items.forEach((playlist) => {
+          playlistNames.push({
+            name: playlist.name,
+            owner: playlist.owner.id,
+            tracks: playlist.tracks,
+            id: playlist.id,
+            uri: playlist.uri,
+          });
+        });
+        this.setState({
+          searchedPlaylists: playlistNames,
+      });
+      console.log(this.state)
+      this.forceUpdate();
+      },
+    });
+  }
+
+  addToPool(playlist) {
+    this.setState((prevState, props) => {
+      yourPlaylists: prevState.yourPlaylists.push(playlist);
+      searchedPlaylists: prevState.searchedPlaylists.splice(
+        0,
+        prevState.searchedPlaylists.length
+      );
+    });
+
+    this.forceUpdate();
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -249,10 +298,15 @@ class App extends Component {
                   }, this)}
                 </ul>
               </div>
+
               <div className="venn" id="venn">
-                <h3>Venn </h3>
+                <h3>Venn Diagram of Selected Playlists </h3>
                 <Venn selectedPlaylists={this.state.selectedPlaylists} />
               </div>
+
+
+
+
               <div className="selectPlaylists">
                 <h3> Select Playlists</h3>
                 <ul class="playlist-select-list">
@@ -294,7 +348,45 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
+
+                <div>
+                  <h3>Search Public Playlists</h3>
+                  <SearchField
+                    classNames="searchbar"
+                    placeholder="Search for Playlist"
+                    onEnter={(value) => this.search(value)}
+                  />
+
+                  <ul className="playlist-search-list">
+                    {this.state.searchedPlaylists.map(function (playlist, i) {
+                      const creator = "Creator : " + playlist.owner;
+                      const songs =
+                        "Playlist Length : " + playlist.tracks.total;
+                      return (
+                        <button
+                          onClick={() => this.addToPool(playlist)}
+                          className="playlist-button"
+                        >
+                          <li className="playlist-search">
+                            <Chip
+                              label={playlist.name}
+                              style={{ backgroundColor: "#1DB954" }}
+                            />
+                            <Chip label={creator} />
+                            <Chip label={songs} />
+                          </li>
+                        </button>
+                      );
+                    }, this)}
+                  </ul>
+                </div>
               </div>
+
+
+
+
+
+
               <div className="playlistPreview">
                 <h3>Playlist Preview </h3>
                 <h4> {this.state.selectedPreviewedPlaylist} </h4>

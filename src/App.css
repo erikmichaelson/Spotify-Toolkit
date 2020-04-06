@@ -153,3 +153,32 @@
 .btn--login {
   margin: 0 auto;
 }
+
+
+/* searchbar css */ 
+.searchbar{
+  width:200px;
+  height:300px;
+}
+
+
+.playlist-button:hover {
+   background:  #1ecd97;
+}
+   
+
+.playlist-button{
+   cursor:pointer;
+}
+
+
+.playlist-search{
+   padding:3px;
+   margin-top: 10px;
+   margin-bottom: 10px;
+   
+}
+
+.playlist-search-list{
+   list-style:none;
+}
