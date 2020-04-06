@@ -203,9 +203,9 @@ class App extends Component {
         });
         this.setState({
           searchedPlaylists: playlistNames,
-      });
-      console.log(this.state)
-      this.forceUpdate();
+        });
+        console.log(this.state);
+        this.forceUpdate();
       },
     });
   }
@@ -297,15 +297,15 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
+                <Button style={{ backgroundColor: "#1DB954" }}>
+                  Go to Editing Area
+                </Button>
               </div>
 
               <div className="venn" id="venn">
                 <h3>Venn Diagram of Selected Playlists </h3>
                 <Venn selectedPlaylists={this.state.selectedPlaylists} />
               </div>
-
-
-
 
               <div className="selectPlaylists">
                 <h3> Select Playlists</h3>
@@ -348,7 +348,6 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
-
                 <div>
                   <h3>Search Public Playlists</h3>
                   <SearchField
@@ -381,11 +380,6 @@ class App extends Component {
                   </ul>
                 </div>
               </div>
-
-
-
-
-
 
               <div className="playlistPreview">
                 <h3>Playlist Preview </h3>
