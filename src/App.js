@@ -9,6 +9,7 @@ import Chip from "@material-ui/core/Chip";
 import hash from "./hash";
 import Venn from "./Venn.js";
 import SearchField from "react-search-field";
+import { useHistory } from "react-router-dom";
 import "./App.css";
 
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
@@ -145,8 +146,8 @@ class App extends Component {
 
   removeSelectedPlaylist(playlist, i) {
     this.setState((prevState, props) => {
-      selectedPlaylists: prevState.selectedPlaylists.splice(i, 1);
-      yourPlaylists: prevState.yourPlaylists.push(playlist);
+      prevState.selectedPlaylists.splice(i, 1);
+      prevState.yourPlaylists.push(playlist);
     });
 
     this.forceUpdate();
@@ -169,8 +170,8 @@ class App extends Component {
         console.log(selectedPlaylist);
         selectedPlaylist.trackList = data.items;
         this.setState((prevState, props) => {
-          selectedPlaylists: prevState.selectedPlaylists.push(selectedPlaylist);
-          yourPlaylists: prevState.yourPlaylists.splice(i, 1);
+          prevState.selectedPlaylists.push(selectedPlaylist);
+          prevState.yourPlaylists.splice(i, 1);
         });
         this.forceUpdate();
       },
@@ -212,14 +213,19 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      yourPlaylists: prevState.yourPlaylists.push(playlist);
-      searchedPlaylists: prevState.searchedPlaylists.splice(
+      prevState.yourPlaylists.push(playlist);
+      prevState.searchedPlaylists.splice(
         0,
         prevState.searchedPlaylists.length
       );
     });
 
     this.forceUpdate();
+  }
+
+  goEditing() {
+    const history = useHistory();
+    history.push("/editing", {selectedPlaylist: this.state.selectedPlaylists});
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -297,7 +303,7 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
-                <Button style={{ backgroundColor: "#1DB954" }}>
+                <Button  onClick = {() => this.goEditing()} style={{ backgroundColor: "#1DB954" }}>
                   Go to Editing Area
                 </Button>
               </div>

@@ -1,0 +1,42 @@
+.editing{
+    text-align: center;
+  
+    min-height: 150vh;
+}
+
+
+.date {
+    display: flex;
+    flex-direction:column;
+    width:20%;
+    height:60%;
+    color:black;
+ 
+  
+
+}
+
+
+.date-item{
+    margin-bottom: 10px;
+}
+
+
+
+.genre{
+    display: flex;
+    flex-direction:column;
+    width:20%;
+    height:60%;
+    color:black;
+    
+}
+
+.chip{
+    margin-top: 20px;
+    width:20%;
+}
+
+.switch{
+    margin-top:10px;
+}
