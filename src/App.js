@@ -24,6 +24,8 @@ class App extends Component {
       previewedPlaylist: [],
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
+      // added
+      songSet: [],
     };
 
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
@@ -33,6 +35,8 @@ class App extends Component {
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
+    // added
+    this.addSongs = this.addSongs.bind(this);
   }
 
   componentDidMount() {
@@ -222,19 +226,19 @@ class App extends Component {
     this.forceUpdate();
   }
 
+  addSongs(songs) {
+    this.addSongs.bind(this);
+    console.log("inside addSongs: " + this);
+    // this code should add a song to the current song set
+    this.setState((prevState, props) => {
+      prevState.songSet = songs;
+    });
+    console.log("songSet: " + this.state.songSet);
+
+    this.forceUpdate();
+  }
+
   // inspired by the React Tutorial on facebook's website
-  // this code *should* creat a venn.js object for each playlist
-  // in the user's library
-  /*	class Visualizer extends React.Component {
-		// i'm way over my head
-
-		render() {
-			return(<div id="venn">
-				</div>
-			)
-		}
-	}    */
-
   render() {
     return (
       <div className="App">
@@ -304,7 +308,7 @@ class App extends Component {
 
               <div className="venn" id="venn">
                 <h3>Venn Diagram of Selected Playlists </h3>
-                <Venn selectedPlaylists={this.state.selectedPlaylists} />
+                <Venn selectedPlaylists={this.state.selectedPlaylists} addSongs={this.addSongs} />
               </div>
 
               <div className="selectPlaylists">
