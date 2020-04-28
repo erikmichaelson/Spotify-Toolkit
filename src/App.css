@@ -16,47 +16,49 @@
 }
 
 .grid-container {
-  margin-top: 50px;
+  margin-top: 0px;
   display: grid;
-  grid-auto-columns: 50%;
+/*  grid-auto-columns: 30%; */
   grid-auto-rows: 50%;
   grid-column-gap: 30px;
-  grid-row-gap: 10px;
+  grid-row-gap: 20px;
 
   grid-template-areas: 
-  "a b"
-  "c d";
+  "a b c"
+  "d e f";
 
 }
 
 
 .selectedPlaylists {
-  grid-area: a;
+  grid-area: a, d;
   color:white;
   overflow:scroll;
-  height: 400px;
-  width: 800px;
+  height: 600px;
+  width: 300px;
   box-shadow: 2px 5px 5px 5px #3d434f;
+  position: relative;
+  text-align: left;
   
 }
 
-
+/*
 .selectPlaylists {
-  grid-area: c;
+  grid-area: d;
   color:white;
   overflow:scroll;
   height: 500px;
-  width: 800px;
+  width: 600px;
   box-shadow: 0px 5px 0px  5px ;
   box-shadow: 2px 5px 5px 5px #3d434f;
   
-}
+} */
 
 .venn {
-  grid-area: b;
+  grid-area: b, e;
   color:white;
   overflow:scroll;
-  height: 400px;
+  height: 100%;
   width: 800px;
   border-radius: 10px;
 
@@ -65,13 +67,25 @@
 }
 
 .playlistPreview {
-  grid-area: d;
+  grid-area: f;
   color:white;
   overflow:scroll;
   height: 500px;
   width: 800px;
   box-shadow: 2px 5px 5px 5px #3d434f;
-  
+  text-align: left;
+
+}
+
+.songSet {
+  grid-area: c;
+  color:white;
+  overflow:scroll;
+  height: 500px;
+  width: 400px;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  text-align: left;
+
 }
 
 
@@ -79,12 +93,16 @@
   margin-left: 0;
   margin-right: 0;
   padding: 10px;
+  text-align: left;
+
 }
 
 .playlist-preview-list{
   margin-left: 0;
   margin-right: 0;
   padding: 10px;
+  text-align: left;
+
 }
 
 
@@ -93,6 +111,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
   width: 100%;
+  text-align: left;
 
 }
 
@@ -106,6 +125,8 @@
 
 .playlist-button-group {
   margin-left: 10px;
+  position: absolute;
+  right:10px;
 }
 
 
@@ -142,7 +163,7 @@
 }
 
 .login-button{
-  margin-top: 50px;
+  padding-top: 50px;
 }
 
 .btn:hover {
@@ -157,8 +178,9 @@
 
 /* searchbar css */ 
 .searchbar{
-  width:200px;
-  height:300px;
+  widows: 80%;
+  height:200px;
+  background-color: transparent;
 }
 
 

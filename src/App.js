@@ -9,7 +9,9 @@ import Chip from "@material-ui/core/Chip";
 import hash from "./hash";
 import Venn from "./Venn.js";
 import SearchField from "react-search-field";
+import ReactTooltip from "react-tooltip";
 import "./App.css";
+import { axisRight } from "d3";
 
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
 
@@ -24,7 +26,6 @@ class App extends Component {
       previewedPlaylist: [],
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
-      // added
       songSet: [],
     };
 
@@ -35,8 +36,8 @@ class App extends Component {
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
-    // added
     this.addSongs = this.addSongs.bind(this);
+    this.playSongs = this.playSongs.bind(this);
   }
 
   componentDidMount() {
@@ -63,14 +64,14 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
       },
       success: (data) => {
-        console.log(data);
+        //console.log(data);
 
         if (!data) {
           return;
         }
         var playlistNames = [];
         data.items.forEach((playlist) => {
-          console.log(playlist);
+          //console.log(playlist);
           playlistNames.push({
             name: playlist.name,
             owner: playlist.owner.id,
@@ -100,10 +101,12 @@ class App extends Component {
         if (!data) {
           return;
         }
+        // handling a bug where only one song is being played and context = null 
+        const contextURI = (data.context) ? data.context.uri : data.item.uri;
 
         this.setState({
           uris: [
-            data.context.uri,
+            contextURI,
             data.item.uri,
             data.item.artists[0].uri,
             data.item.album.uri,
@@ -116,7 +119,7 @@ class App extends Component {
   }
 
   getPlaylistTracks(playlist) {
-    console.log(playlist);
+    //console.log(playlist);
     var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
     $.ajax({
       url: url,
@@ -125,7 +128,7 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
       },
       success: (data) => {
-        console.log(data);
+        //console.log(data);
 
         if (!data) {
           return;
@@ -137,7 +140,6 @@ class App extends Component {
         this.forceUpdate();
       },
     });
-    console.log(this.state);
   }
 
   showPlaylist(playlist) {
@@ -170,7 +172,7 @@ class App extends Component {
         if (!data) {
           return;
         }
-        console.log(selectedPlaylist);
+        //console.log(selectedPlaylist);
         selectedPlaylist.trackList = data.items;
         this.setState((prevState, props) => {
           selectedPlaylists: prevState.selectedPlaylists.push(selectedPlaylist);
@@ -182,7 +184,7 @@ class App extends Component {
   }
 
   search(value) {
-    console.log("hi");
+    //console.log("hi");
     var searchCleaned = value.replace(" ", "%20") + "&type=playlist";
     $.ajax({
       url: "https://api.spotify.com/v1/search?q=" + searchCleaned,
@@ -191,7 +193,7 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
       },
       success: (data) => {
-        console.log(data);
+        //console.log(data);
         if (!data) {
           return;
         }
@@ -208,7 +210,7 @@ class App extends Component {
         this.setState({
           searchedPlaylists: playlistNames,
         });
-        console.log(this.state);
+        //console.log(this.state);
         this.forceUpdate();
       },
     });
@@ -227,15 +229,62 @@ class App extends Component {
   }
 
   addSongs(songs) {
+    console.log(songs);
     this.addSongs.bind(this);
-    console.log("inside addSongs: " + this);
-    // this code should add a song to the current song set
     this.setState((prevState, props) => {
       prevState.songSet = songs;
     });
-    console.log("songSet: " + this.state.songSet);
 
     this.forceUpdate();
+  }
+
+  playSongs(songs) {
+    // catch empty sets
+    if(songs.length == 0) { 
+      console.log("no songs selected");
+      return;
+    }
+    var deviceID;
+    // get the device because spotify needs a device to be active
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/player/devices",
+      type: "GET",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      success: (data) => {
+        console.log(data);
+        if (!data) {
+          return;
+        }
+        deviceID = data.devices[0].id;
+        console.log(deviceID);
+      },
+    });
+    // works
+    console.log("played songs: " + songs);
+    var firstSong = songs[0];
+    // fails
+    var uri = firstSong.track.uri;
+    var uriCleaned = "?uri=" + uri.replace(":", "%3A") + "&device_id=";
+
+    // throw in a brute force wait so deviceID isn't undefined
+    setTimeout(()=>this.sendToQueue(deviceID, uriCleaned), 300);
+  }
+
+  sendToQueue(deviceID, uri) {
+    // I need to update permissions for the website
+    console.log("stq called")
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/player/queue/" + uri + deviceID,
+      type: "POST",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      success: () => {
+        this.forceUpdate();
+      },
+    });
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -245,8 +294,8 @@ class App extends Component {
         <header className="App-header">
           <h1 className="banner"> The Spotify Toolkit </h1>
         </header>
-        <div className="login-button">
-          {!this.state.token && (
+        {!this.state.token && (
+          <div className="login-button">
             <a
               className="btn btn--loginApp-link"
               href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
@@ -255,105 +304,15 @@ class App extends Component {
             >
               Login to Spotify
             </a>
-          )}
-        </div>
+          </div>
+        )}
 
         {this.state.token && (
           <div>
             <div className="grid-container">
               <div className="selectedPlaylists">
-                <h3>Selected Playlists </h3>
-                <ul className="playlist-selected-list">
-                  {this.state.selectedPlaylists.map(function (playlist, i) {
-                    const creator = "Creator : " + playlist.owner;
-                    const songs = "Playlist Length : " + playlist.tracks.total;
-                    return (
-                      <li className="playlist">
-                        <Chip
-                          label={playlist.name}
-                          style={{ backgroundColor: "#1DB954" }}
-                        />
-                        <Chip label={creator} />
-                        <Chip label={songs} />
-
-                        <ButtonGroup
-                          variant="contained"
-                          color="primary"
-                          aria-label="contained primary button group"
-                          className="playlist-button-group"
-                        >
-                          <Button
-                            style={{ backgroundColor: "red" }}
-                            onClick={() =>
-                              this.removeSelectedPlaylist(playlist, i)
-                            }
-                          >
-                            Remove Playlist
-                          </Button>
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() => this.showPlaylist(playlist)}
-                          >
-                            Preview Playlist
-                          </Button>
-                        </ButtonGroup>
-                      </li>
-                    );
-                  }, this)}
-                </ul>
-                <Button style={{ backgroundColor: "#1DB954" }}>
-                  Go to Editing Area
-                </Button>
-              </div>
-
-              <div className="venn" id="venn">
-                <h3>Venn Diagram of Selected Playlists </h3>
-                <Venn selectedPlaylists={this.state.selectedPlaylists} addSongs={this.addSongs} />
-              </div>
-
-              <div className="selectPlaylists">
-                <h3> Select Playlists</h3>
-                <ul class="playlist-select-list">
-                  {this.state.yourPlaylists.map(function (playlist, i) {
-                    const creator = "Creator : " + playlist.owner;
-                    const songs = "Playlist Length " + playlist.tracks.total;
-                    return (
-                      <li className="playlist">
-                        <Chip
-                          label={playlist.name}
-                          style={{ backgroundColor: "#1DB954" }}
-                        />
-                        <Chip label={creator} />
-                        <Chip label={songs} />
-
-                        <ButtonGroup
-                          variant="contained"
-                          color="primary"
-                          aria-label="contained primary button group"
-                          className="playlist-button-group"
-                        >
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() =>
-                              this.addSelectedPlaylist(playlist, i)
-                            }
-                          >
-                            Select Playlist
-                          </Button>
-
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() => this.showPlaylist(playlist)}
-                          >
-                            Preview Playlist
-                          </Button>
-                        </ButtonGroup>
-                      </li>
-                    );
-                  }, this)}
-                </ul>
+                <h3>Playlists </h3>
                 <div>
-                  <h3>Search Public Playlists</h3>
                   <SearchField
                     classNames="searchbar"
                     placeholder="Search for Playlist"
@@ -362,9 +321,8 @@ class App extends Component {
 
                   <ul className="playlist-search-list">
                     {this.state.searchedPlaylists.map(function (playlist, i) {
-                      const creator = "Creator : " + playlist.owner;
-                      const songs =
-                        "Playlist Length : " + playlist.tracks.total;
+                      const creator = playlist.owner;
+                      const songs = playlist.tracks.total;
                       return (
                         <button
                           onClick={() => this.addToPool(playlist)}
@@ -379,6 +337,144 @@ class App extends Component {
                             <Chip label={songs} />
                           </li>
                         </button>
+                      );
+                    }, this)}
+                  </ul>
+                </div>
+                <ul className="playlist-select-list">
+                  {this.state.selectedPlaylists.map(function (playlist, i) {
+                    const creator = playlist.owner;
+                    const songs = playlist.tracks.total;
+                    const test = creator+"\n"+songs+" songs";
+                    return (
+                      <li className="playlist">
+                        {/*
+                        <Chip
+                          label={playlist.name}
+                          style={{ backgroundColor: "#1DB954" }}
+                        />
+                        <Chip label={creator} />
+                        <Chip label={songs} />
+                        */}
+                        <a
+                          data-for={playlist.name}
+                          data-tip={test}
+                          data-iscapture="true"
+                        >
+                          {playlist.name}
+                        </a>
+
+                        <ButtonGroup
+                          variant="contained"
+                          color="primary"
+                          aria-label="contained primary button group"
+                          className="playlist-button-group"
+                        >
+                          <Button
+                            style={{ backgroundColor: "red" }}
+                            onClick={() => this.removeSelectedPlaylist(playlist, i) }
+                          >
+                            -
+                          </Button>
+                          <Button
+                            style={{ backgroundColor: "#1DB954" }}
+                            onClick={() => this.showPlaylist(playlist)}
+                          >
+                            ≡
+                          </Button>
+                        </ButtonGroup>
+                        <ReactTooltip
+                          id={playlist.name}
+                          place="right"
+                          type="light"
+                          effect="solid"
+                          multiline={true}
+                        />
+
+                      </li>
+                    );
+                  }, this)}
+                </ul>
+                <ul class="playlist-select-list">
+                  {this.state.yourPlaylists.map(function (playlist, i) {
+                    const creator = "Creator : " + playlist.owner;
+                    const songs = "Playlist Length " + playlist.tracks.total;
+                    const test = creator+"\n"+songs+" songs";
+                    return (
+                      <li className="playlist">
+                        <a
+                          data-for={playlist.name}
+                          data-tip={test}
+                          data-iscapture="true"
+                        >
+                          {playlist.name}
+                        </a>
+
+                        <ButtonGroup
+                          variant="contained"
+                          color="primary"
+                          aria-label="contained primary button group"
+                          className="playlist-button-group"
+                        >
+                          <Button
+                            style={{ backgroundColor: "#1DB954" }}
+                            onClick={() =>
+                              this.addSelectedPlaylist(playlist, i)
+                            }
+                          >
+                            +
+                          </Button>
+
+                          <Button
+                            style={{ backgroundColor: "#1DB954" }}
+                            onClick={() => this.showPlaylist(playlist)}
+                          >
+                            ≡
+                          </Button>
+                        </ButtonGroup>
+                        <ReactTooltip
+                          id={playlist.name}
+                          place="right"
+                          type="light"
+                          effect="solid"
+                          multiline={true}
+                        />
+                      </li>
+                    );
+                  }, this)}
+                </ul>
+                <Button style={{ backgroundColor: "#1DB954" }}>
+                  Go to Editing Area
+                </Button>
+              </div>
+
+              <div className="venn" id="venn">
+                <h3>Venn Diagram of Selected Playlists </h3>
+                <Venn selectedPlaylists={this.state.selectedPlaylists} addSongs={this.addSongs} />
+              </div>
+
+              <div className="songSet">
+                <h3>Songs</h3>
+                <Button 
+                  onClick={()=> this.playSongs(this.state.songSet)}
+                  style={{ backgroundColor: "#1DB954" }}
+                >
+                    ►
+                </Button>
+                <div>
+                  <ul className="song-set-list">
+                    {this.state.songSet.map(function (song, i) {
+                      const Artist = song.track.artists[0].name;
+                      const Title = song.track.name;
+
+                      return (
+                        <li className="song">
+                          <Chip
+                            label={Title}
+                            style={{ backgroundColor: "#1DB954" }}
+                          />
+                          <Chip label={Artist} />
+                        </li>
                       );
                     }, this)}
                   </ul>

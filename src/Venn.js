@@ -20,6 +20,7 @@ class Venn extends React.Component {
 
     // add a tooltip
     var tooltip = d3.select("#venn").append("div").attr("class", "venntooltip");
+    console.log("component updated");
 
     d3.selectAll("#rings .venn-circle")
       .on("mouseover", function (d, i) {
@@ -29,6 +30,8 @@ class Venn extends React.Component {
           .select("text")
           .style("font-weight", "100")
           .style("font-size", "36px");
+        
+        console.log("selectAll called");
       })
       .on("mouseout", function (d, i) {
         var node = d3.select(this).transition();
@@ -50,7 +53,6 @@ class Venn extends React.Component {
         // Display a tooltip with the current size
         tooltip.transition().duration(400).style("opacity", 0.9);
         tooltip.text(d.size + " songs");
-        console.log("inside addSongs: " + this);
 
         // highlight the current path
         var selection = d3.select(this).transition("tooltip").duration(400);
