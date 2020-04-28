@@ -1,7 +1,7 @@
 .App {
  text-align: center;
  background-color: #282c34;
- min-height: 150vh;
+ min-height: 100vh;
 
 }
 
@@ -13,6 +13,10 @@
   justify-content: space-between;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .grid-container {
@@ -31,7 +35,7 @@
 
 
 .selectedPlaylists {
-  grid-area: a, d;
+  grid-area: a;
   color:white;
   overflow:scroll;
   height: 600px;
@@ -42,23 +46,11 @@
   
 }
 
-/*
-.selectPlaylists {
-  grid-area: d;
-  color:white;
-  overflow:scroll;
-  height: 500px;
-  width: 600px;
-  box-shadow: 0px 5px 0px  5px ;
-  box-shadow: 2px 5px 5px 5px #3d434f;
-  
-} */
-
 .venn {
   grid-area: b, e;
   color:white;
   overflow:scroll;
-  height: 100%;
+  height: 200%;
   width: 800px;
   border-radius: 10px;
 
@@ -71,7 +63,7 @@
   color:white;
   overflow:scroll;
   height: 500px;
-  width: 800px;
+  width: 100%;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
 
@@ -92,8 +84,16 @@
 .playlist-select-list{
   margin-left: 0;
   margin-right: 0;
-  padding: 10px;
+  margin-top: 0;
+  padding: 0px 10px 10px 10px;
   text-align: left;
+
+}
+
+.playlist-selected-list{
+  font-weight: 600;
+  padding: 10px 10px 0 10px;
+  margin-bottom: 0;
 
 }
 
@@ -140,8 +140,6 @@
   position: fixed;
   bottom: 0;
 }
-
-
 
 .banner {
   color: #1ecd97;

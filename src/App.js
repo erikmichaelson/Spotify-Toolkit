@@ -341,7 +341,7 @@ class App extends Component {
                     }, this)}
                   </ul>
                 </div>
-                <ul className="playlist-select-list">
+                <ul className="playlist-select-list playlist-selected-list">
                   {this.state.selectedPlaylists.map(function (playlist, i) {
                     const creator = playlist.owner;
                     const songs = playlist.tracks.total;
