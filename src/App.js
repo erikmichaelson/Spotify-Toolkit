@@ -40,6 +40,8 @@ class App extends Component {
     this.removeSongs = this.removeSongs.bind(this);
     this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.saveClick = this.saveClick.bind(this);
   }
 
   componentDidMount() {
@@ -234,7 +236,7 @@ class App extends Component {
     console.log(songs);
     this.addSongs.bind(this);
     this.setState((prevState, props) => {
-      prevState.songSet = songSet.concat(songs);
+      prevState.songSet = prevState.songSet.concat(songs);
     });
 
     this.forceUpdate();
@@ -244,7 +246,7 @@ class App extends Component {
     console.log(songs);
     this.removeSongs.bind(this);
     this.setState((prevState, props) => {
-        prevState.songSet = songSet.filter(x => !second.includes(x));
+        prevState.songSet = prevState.songSet.filter(x => !songs.includes(x));
       }
     );
 
@@ -307,6 +309,29 @@ class App extends Component {
         this.forceUpdate();
       },
     });
+  }
+
+  savePlaylist(name) {
+    var sharing = true;
+    var collab = false;
+
+    // I need to update permissions for the website
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/playlists",
+      type: "POST",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      data: name + sharing + collab,
+      success: () => {
+        this.forceUpdate();
+      },
+    });
+  }
+
+  saveClick() {
+    var name = prompt("Name your new playlist");
+    this.savePlaylist(name);
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -535,7 +560,13 @@ class App extends Component {
 
               <div className="savePlaylist">
                 <h3>Playlist Options </h3>
-                <h4> {this.state.selectedPreviewedPlaylist} </h4>
+                  <Button style={{ backgroundColor: "#1DB954" }}
+                    onClick = {()=> this.savePlaylist(name)}
+                  >
+                    Save Song Set as Playlist
+                  </Button>
+                  <h4>Playlist Name</h4>
+                  <input id="name"></input>
                 <ul className="playlist-preview-list">
                 </ul>
               </div>
