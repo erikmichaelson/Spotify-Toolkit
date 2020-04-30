@@ -503,6 +503,13 @@ class App extends Component {
                   }, this)}
                 </ul>
               </div>
+
+              <div className="filters">
+                <h3>Filters </h3>
+                <h4> {this.state.selectedPreviewedPlaylist} </h4>
+                <ul className="playlist-preview-list">
+                </ul>
+              </div>
             </div>
 
             <SpotifyPlayer

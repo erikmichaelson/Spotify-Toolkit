@@ -47,10 +47,10 @@ h1, h2, h3, h4 {
 }
 
 .venn {
-  grid-area: b, e;
+  grid-area: b;
   color:white;
   overflow:scroll;
-  height: 200%;
+  height: 100%;
   width: 800px;
   border-radius: 10px;
 
@@ -59,21 +59,32 @@ h1, h2, h3, h4 {
 }
 
 .playlistPreview {
-  grid-area: f;
+  grid-area: d;
   color:white;
   overflow:scroll;
   height: 500px;
-  width: 100%;
+  width: 300px;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
 
 }
 
 .songSet {
-  grid-area: c;
+  grid-area: e;
   color:white;
   overflow:scroll;
   height: 500px;
+  width: 800px;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  text-align: left;
+
+}
+
+.filters {
+  grid-area: c, f;
+  color:white;
+  overflow:scroll;
+  height: 100%;
   width: 400px;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
