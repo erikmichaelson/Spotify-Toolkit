@@ -37,6 +37,8 @@ class App extends Component {
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
     this.addSongs = this.addSongs.bind(this);
+    this.removeSongs = this.removeSongs.bind(this);
+    this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
   }
 
@@ -231,6 +233,26 @@ class App extends Component {
   addSongs(songs) {
     console.log(songs);
     this.addSongs.bind(this);
+    this.setState((prevState, props) => {
+      prevState.songSet = songSet.concat(songs);
+    });
+
+    this.forceUpdate();
+  }
+
+  removeSongs(songs) {
+    console.log(songs);
+    this.removeSongs.bind(this);
+    this.setState((prevState, props) => {
+        prevState.songSet = songSet.filter(x => !second.includes(x));
+      }
+    );
+
+    this.forceUpdate();
+  }
+
+  replaceSongs(songs) {
+    this.replaceSongs.bind(this);
     this.setState((prevState, props) => {
       prevState.songSet = songs;
     });
@@ -506,6 +528,13 @@ class App extends Component {
 
               <div className="filters">
                 <h3>Filters </h3>
+                <h4> {this.state.selectedPreviewedPlaylist} </h4>
+                <ul className="playlist-preview-list">
+                </ul>
+              </div>
+
+              <div className="savePlaylist">
+                <h3>Playlist Options </h3>
                 <h4> {this.state.selectedPreviewedPlaylist} </h4>
                 <ul className="playlist-preview-list">
                 </ul>

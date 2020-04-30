@@ -81,7 +81,18 @@ h1, h2, h3, h4 {
 }
 
 .filters {
-  grid-area: c, f;
+  grid-area: c;
+  color:white;
+  overflow:scroll;
+  height: 100%;
+  width: 400px;
+  box-shadow: 2px 5px 5px 5px #3d434f;
+  text-align: left;
+
+}
+
+.savePlaylist {
+  grid-area: f;
   color:white;
   overflow:scroll;
   height: 100%;
