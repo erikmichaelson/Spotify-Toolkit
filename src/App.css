@@ -224,3 +224,8 @@ h1, h2, h3, h4 {
 .playlist-search-list{
    list-style:none;
 }
+
+.song-chip{
+  
+  margin-left: 10px;
+}
