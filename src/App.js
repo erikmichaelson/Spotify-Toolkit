@@ -418,7 +418,7 @@ class App extends Component {
   filterAdded() {
     //var max = this.state.textFieldValue;
 
-    var year = this.refs.yearAdded.getValue();
+    var year = this.state.filteredDate;
     console.log(year);
   /*  this.state.songSet.forEach(s => {
       var rYear = s.track.album.release_date.substring(0,4);
