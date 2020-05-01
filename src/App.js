@@ -141,7 +141,7 @@ class App extends Component {
       success: (data) => {
         //console.log(data);
         var sum = data;
-        while(data['next']){
+        while(data['next']!=null){
           var url = data['next'];
           $.ajax({
             url: url,
@@ -151,7 +151,6 @@ class App extends Component {
             },
             success: (data) => {
               //console.log(data);
-
               sum+=data;
             },
           });
@@ -371,7 +370,7 @@ class App extends Component {
       //var max = document.getElementById(ageMax).value;
 
       this.setState((prevState, props) => {
-        var newSongSet = prevState.songSet.filter(s => 
+        var newSongSet = prevState.songSet.filter(s =>
           (s.track.album.release_date.substring(0,4) < min || s.track.album.release_date.substring(0,4) > max));
         return { songSet: newSongSet };
       });
@@ -638,7 +637,7 @@ class App extends Component {
                   <li>
                     Remove Artist
                     <TextField
-                      
+
                     />
                     <input onEnter={artist =>this.filterArtist(artist)} />
                   </li>
