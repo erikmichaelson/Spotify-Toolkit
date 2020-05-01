@@ -26,6 +26,10 @@ class App extends Component {
       selectedPlaylists: [],
       previewedPlaylist: [],
       playlistName: "",
+      filteredArtist: "",
+      filteredDate: "",
+      minDate: "",
+      maxDate: "",
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
       songSet: [],
@@ -44,6 +48,11 @@ class App extends Component {
     this.playSongs = this.playSongs.bind(this);
 
     this.savePlaylist = this.savePlaylist.bind(this);
+
+    this.handleArtistChange = this.handleArtistChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.handleMinChange = this.handleMinChange.bind(this);
+    this.handleMaxChange = this.handleMaxChange.bind(this);
 
     this.handlePlaylistNameOnChange = this.handlePlaylistNameOnChange.bind(
       this
@@ -433,6 +442,30 @@ class App extends Component {
     });
   }
 
+  handleMinChange(event) {
+    this.setState({
+      minDate: event.target.value,
+    });
+  }
+
+  handleMaxChange(event) {
+    this.setState({
+      maxDate: event.target.value,
+    });
+  }
+
+  handleArtistChange(event) {
+    this.setState({
+      filteredArtist: event.target.value,
+    });
+  }
+
+  handleDateChange(event) {
+    this.setState({
+      filteredDate: event.target.value,
+    });
+  }
+
   // inspired by the React Tutorial on facebook's website
   render() {
     return (
@@ -667,21 +700,30 @@ class App extends Component {
                       placeholder="2016"
                       className="date"
                       value={this.state.textFieldValue} 
-                      //onChange={()=>this.filterAdded(this.value)}
+                      onChange={this.handleDateChange}
                     />
                    <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
 
                   </li>
                   <li>
                     Year Released<br></br>
-                    <TextField className="date"/>
+                    <TextField
+                      className="date"
+                      onChange={this.handleMinChange}
+                    />
                     to
-                    <TextField className="date"/>
+                    <TextField 
+                      className="date"
+                      onChange={this.handleMaxChange}
+                    />
                     <input type="submit" value="Apply"></input>
                   </li>
                   <li>
                     Remove Artist
-                    <TextField className="date"/>
+                    <TextField 
+                      className="date"
+                      onChange={this.handleArtistChange}
+                    />
                     <input type="submit" value="Apply"></input>
                   </li>
                 </ul>
