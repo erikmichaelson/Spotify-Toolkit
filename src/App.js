@@ -29,11 +29,14 @@ class App extends Component {
       songSet: [],
     };
 
+
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
     this.addSelectedPlaylist = this.addSelectedPlaylist.bind(this);
     this.removeSelectedPlaylist = this.removeSelectedPlaylist.bind(this);
     this.showPlaylist = this.showPlaylist.bind(this);
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
+
+
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
     //  this.removeSongs = this.removeSongs.bind(this);
@@ -119,6 +122,8 @@ class App extends Component {
     });
   }
 
+
+
   getPlaylistTracks(playlist) {
     //console.log(playlist);
     var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
@@ -130,18 +135,35 @@ class App extends Component {
       },
       success: (data) => {
         //console.log(data);
+        var sum = data;
+        while(data['next']){
+          var url = data['next'];
+          $.ajax({
+            url: url,
+            type: "GET",
+            beforeSend: (xhr) => {
+              xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+            },
+            success: (data) => {
+              //console.log(data);
 
+              sum+=data;
+            },
+          });
+        }
         if (!data) {
           return;
         }
 
         this.setState({
-          previewedPlaylist: data.items,
+          previewedPlaylist: sum.items,
         });
         this.forceUpdate();
       },
     });
   }
+
+
 
   showPlaylist(playlist) {
     this.setState({
@@ -267,7 +289,7 @@ class App extends Component {
 
     this.forceUpdate();
   }
-  
+
   */
 
   playSongs(song) {
