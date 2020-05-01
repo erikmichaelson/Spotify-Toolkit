@@ -1,184 +1,259 @@
 .App {
- text-align: center;
- background-color: #282c34;
- min-height: 150vh;
-
-}
-
-.App-header {
+  text-align: center;
   background-color: #282c34;
-  display: flex;
-  flex-direction: column;
-  align-items: space-between;
-  justify-content: space-between;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.grid-container {
-  margin-top: 50px;
-  display: grid;
-  grid-auto-columns: 50%;
-  grid-auto-rows: 50%;
-  grid-column-gap: 30px;
-  grid-row-gap: 10px;
-
-  grid-template-areas: 
-  "a b"
-  "c d";
-
-}
-
-
-.selectedPlaylists {
-  grid-area: a;
-  color:white;
-  overflow:scroll;
-  height: 400px;
-  width: 800px;
-  box-shadow: 2px 5px 5px 5px #3d434f;
-  
-}
-
-
-.selectPlaylists {
-  grid-area: c;
-  color:white;
-  overflow:scroll;
-  height: 500px;
-  width: 800px;
-  box-shadow: 0px 5px 0px  5px ;
-  box-shadow: 2px 5px 5px 5px #3d434f;
-  
-}
-
-.venn {
-  grid-area: b;
-  color:white;
-  overflow:scroll;
-  height: 400px;
-  width: 800px;
-  border-radius: 10px;
-
-  box-shadow: 2px 5px 5px 5px #3d434f;
-  
-}
-
-.playlistPreview {
-  grid-area: d;
-  color:white;
-  overflow:scroll;
-  height: 500px;
-  width: 800px;
-  box-shadow: 2px 5px 5px 5px #3d434f;
-  
-}
-
-
-.playlist-select-list{
-  margin-left: 0;
-  margin-right: 0;
-  padding: 10px;
-}
-
-.playlist-preview-list{
-  margin-left: 0;
-  margin-right: 0;
-  padding: 10px;
-}
-
-
-.playlist{
-  display: inline-block;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-
-}
-
-.song{
-  display: inline-block;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-
-.playlist-button-group {
-  margin-left: 10px;
-}
-
-
-
-
-.webPlayer{
-  size:20%;
-}
-
-._PlayerRSWP {
-  position: fixed;
-  bottom: 0;
-}
-
-
-
-.banner {
-  color: #1ecd97;
-}
-
-/** Buttons **/
-
-.btn {
-  background-color: transparent;
-  border-radius: 2em;
-  border: 0.2em solid #1ecd97;
-  color: #1ecd97;
-  cursor: pointer;
-  font-size: 3vmin;
-  padding: 0.7em 1.5em;
-  text-transform: uppercase;
-  transition: all 0.25s ease;
-  
-}
-
-.login-button{
-  margin-top: 50px;
-}
-
-.btn:hover {
-  background: #1ecd97;
-  color: #333;
-}
-
-.btn--login {
-  margin: 0 auto;
-}
-
-
-/* searchbar css */ 
-.searchbar{
-  width:200px;
-  height:300px;
-}
-
-
-.playlist-button:hover {
-   background:  #1ecd97;
-}
+  min-height: 100vh;
+ 
+ }
+ 
+ .App-header {
+   background-color: #282c34;
+   display: flex;
+   flex-direction: column;
+   align-items: space-between;
+   justify-content: space-between;
+   font-size: calc(10px + 2vmin);
+   color: white;
+ }
+ 
+ h1, h2, h3, h4 {
+   font-family: 'Courier New', Courier, monospace;
+ }
+ 
+ li {
+   font-size: small;
+ }
+ 
+ i{
+   text-align: right;
+ }
+ 
+ .grid-container {
+   margin-top: 0px;
+   margin-left: 15px;
+   display: grid;
+ /*  grid-auto-columns: 30%; */
+   grid-auto-rows: 50%;
+   grid-column-gap: 30px;
+   grid-row-gap: 20px;
+ 
+   grid-template-areas: 
+   "a b c"
+   "d e f";
+ 
+ }
+ 
+ 
+ .selectedPlaylists {
+   grid-area: a;
+   color:white;
+   overflow:scroll;
+   height: 520px;
+   width: 20vw;
+   box-shadow: 2px 5px 5px 5px #3d434f;
+   position: relative;
+   text-align: left;
+   margin-bottom:20px;
    
-
-.playlist-button{
-   cursor:pointer;
-}
-
-
-.playlist-search{
-   padding:3px;
+ }
+ 
+ .venn {
+   grid-area: b;
+   color:white;
+   overflow:scroll;
+   height: 520px;
+   width: 50vw;
+   border-radius: 10px;
+ 
+   box-shadow: 2px 5px 5px 5px #3d434f;
+   
+ }
+ 
+ .playlistPreview {
+   grid-area: d;
+   color:white;
+   overflow:scroll;
+   height: 520px;
+   width: 20vw;
+   box-shadow: 2px 5px 5px 5px #3d434f;
+   text-align: left;
+ 
+ }
+ 
+ .songSet {
+   grid-area: e;
+   color:white;
+   overflow:scroll;
+   height: 520px;
+   width: 50vw;
+   box-shadow: 2px 5px 5px 5px #3d434f;
+   text-align: left;
+ 
+ }
+ 
+ .filters {
+   grid-area: c;
+   color:white;
+   overflow:scroll;
+   height: 100%;
+   width: 20vw;
+   box-shadow: 2px 5px 5px 5px #3d434f;
+   text-align: left;
+ 
+ }
+ 
+ .savePlaylist {
+   grid-area: f;
+   color:white;
+   overflow:scroll;
+   height: 100%;
+   width: 20vw;
+   box-shadow: 2px 5px 5px 5px #3d434f;
+ 
+ }
+ 
+ #playlist-name{
+   margin-top: 50px;
+   margin-bottom: 50px;
+ }
+ 
+ 
+ .playlist-select-list{
+   margin-left: 0;
+   margin-right: 0;
+   margin-top: 0;
+   padding: 0px 10px 10px 10px;
+   text-align: left;
+ 
+ }
+ 
+ .playlist-selected-list{
+   font-weight: 600;
+   padding: 10px 10px 0 10px;
+   margin-bottom: 0;
+ 
+ }
+ 
+ .playlist-preview-list{
+   margin-left: 0;
+   margin-right: 0;
+   padding: 10px;
+   text-align: left;
+ 
+ }
+ 
+ 
+ .playlist{
+   display: inline-block;
+   margin-top: 20px;
+   margin-bottom: 20px;
+   width: 100%;
+   text-align: left;
+ 
+   
+ 
+ }
+ 
+ .song{
+   display: inline-block;
    margin-top: 10px;
    margin-bottom: 10px;
+   width: 100%;
+ }
+ 
+ 
+ .playlist-button-group {
+   margin-left: 10px;
+   position: absolute;
+   right:10px;
+ }
+ 
+ 
+ .date {
+   background-color:white;
+   opacity: .8;
+ }
+ 
+ .webPlayer{
+   size:20%;
+ }
+ 
+ ._PlayerRSWP {
+   position: fixed;
+   bottom: 0;
+ }
+ 
+ .banner {
+   color: #1ecd97;
+ }
+ 
+ /** Buttons **/
+ 
+ .btn {
+   background-color: transparent;
+   border-radius: 1.7em;
+   border: 0.2em solid #1ecd97;
+   color: #1ecd97;
+   cursor: pointer;
+   font-size: 3vmin;
+   padding: 0.4em 1em;
+   text-transform: uppercase;
+   transition: all 0.25s ease;
    
-}
-
-.playlist-search-list{
-   list-style:none;
-}
+ }
+ 
+ .login-button{
+   padding-top: 50px;
+ }
+ 
+ .btn:hover {
+   background: #1ecd97;
+   color: #333;
+ }
+ 
+ .btn--login {
+   margin: 0 auto;
+ }
+ 
+ 
+ /* searchbar css */ 
+ .searchbar{
+   widows: 60%;
+   height: 32px !important;
+   background-color: transparent;
+ }
+ 
+ 
+ .playlist-button:hover {
+    background:  #1ecd97;
+ }
+    
+ 
+ .playlist-button{
+    cursor:pointer;
+ }
+ 
+ 
+ .playlist-search{
+    padding:3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    
+ }
+ 
+ .playlist-search-list{
+    list-style:none;
+ }
+ 
+ .song-chip{
+   
+   margin-left: 10px;
+ }
+ 
+ 
+ .apply-button{
+   margin-top:10px;
+ }
+ 
+ .filter-object{
+   margin-bottom: 12px;
+ }

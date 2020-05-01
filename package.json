@@ -17,6 +17,7 @@
     "react-scripts": "2.1.8",
     "react-search-field": "^1.0.0",
     "react-spotify-web-playback": "^0.6.0",
+    "react-tooltip": "^4.2.5",
     "venn.js": "^0.2.20"
   },
   "scripts": {
