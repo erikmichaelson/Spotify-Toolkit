@@ -265,7 +265,7 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      prevState.unselectedPlaylists.push(playlist);
+      prevState.unselectedPLaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
