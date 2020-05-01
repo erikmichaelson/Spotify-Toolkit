@@ -210,7 +210,7 @@ i{
 /* searchbar css */ 
 .searchbar{
   widows: 60%;
-  height: 25px; @override
+  height: 32px !important;
   background-color: transparent;
 }
 

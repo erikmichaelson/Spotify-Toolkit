@@ -628,8 +628,8 @@ class App extends Component {
                   </li>
                   <li>
                     Remove Artist
-                    <TextField />
-                    <input onEnter={(artist) => this.filterArtist(artist)} />
+                    <TextField className="date"/>
+                    <input type="submit" value="Apply"></input>
                   </li>
                 </ul>
               </div>
