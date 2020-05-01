@@ -265,7 +265,7 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      prevState.unselectedPLaylists.push(playlist);
+      prevState.unselectedPlaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
@@ -302,8 +302,8 @@ class App extends Component {
   }
 
   savePlaylist() {
-    if (this.state.playlistName == "") {
-      alert("Please Enter A Name for Your Playlist");
+    if (this.state.playlistName == "" || this.state.songSet.length == 0) {
+      alert("Please Enter A Name for Your Playlist Or Add Songs To Your Playlist");
       return;
     } else {
       var sharing = true;
@@ -332,21 +332,21 @@ class App extends Component {
           }),
           dataType: "json",
           success: (data) => {
-            console.log("in data");
-            console.log(data);
-            console.log(this.state.songSet);
-
             var uris = [];
             this.state.songSet.forEach((song) => {
               uris.push(song.track.uri);
             });
 
-            //add songs to the playlist
+            var stringbody = JSON.stringify(uris);
+
+            var url = data.href + "/tracks?uris=";
+
+            for (var i = 0; i < 100; i++) {
+              url = url + uris[i] + ",";
+            }
+
             $.ajax({
-              url:
-                "https://api.spotify.com/v1/me/playlists/" +
-                data.id +
-                "/tracks",
+              url: url,
               type: "POST",
               beforeSend: (xhr) => {
                 xhr.setRequestHeader(
@@ -355,7 +355,7 @@ class App extends Component {
                 );
               },
               data: JSON.stringify({
-                uris: uris,
+                uri: uris,
               }),
               dataType: "json",
               success: (data) => {
@@ -406,22 +406,15 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filterAdded() {
-    //var max = this.state.textFieldValue;
+  filterAdded(songs, min, max) {
+    //var min = document.getElementById(addedMin).value;
+    //var max = document.getElementById(addedMax).value;
 
-    var year = this.refs.yearAdded.getValue();
-    console.log(year);
-  /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
-    this.setState((prevState, props) => {
-      console.log(year) //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter(s => 
-        (s.track.album.release_date.substring(0,4) == year));
-      return { songSet: newSongSet };
+    this.state.songSet.forEach((s) => {
+      var rYear = s.track.album.release_date.substring(0, 4);
+      if (rYear < min || rYear > max) {
+        songs.remove(s);
+      }
     });
 
     this.forceUpdate();
@@ -634,12 +627,18 @@ class App extends Component {
                 <h4> {this.state.selectedPreviewedPlaylist} </h4>
                 <ul className="playlist-preview-list">
                   {this.state.previewedPlaylist.map(function (song, i) {
-                    const Artist = song.track.artists[0].name;
-                    const Title = song.track.name;
+                    const Artist = "Artist : " + song.track.artists[0].name;
+                    const Album = "Album : " + song.track.album.name;
+                    const Title = "Track : " + song.track.name;
 
                     return (
                       <li className="song">
-                        {Title} <i style={{color:"#d1d1d1"}}>{Artist}</i>
+                        <Chip
+                          label={Title}
+                          style={{ backgroundColor: "#1DB954" }}
+                        />
+                        <Chip label={Artist} />
+                        <Chip label={Album} />
                       </li>
                     );
                   }, this)}
@@ -660,23 +659,18 @@ class App extends Component {
                     ></input>
                   </li>
                   <li>
-                    Year Added<br></br>
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="2016"
-                      className="date"
-                      value={this.state.textFieldValue} 
-                      //onChange={()=>this.filterAdded(this.value)}
-                    />
-                   <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
-
+                    Year Released<br></br>
+                    <input id="ageMin" value="YYYY"></input>
+                    <input onChange={(value) => this.filterAdded(value)} />
+                    to
+                    <input id="ageMax" value="YYYY"></input>
+                    <input type="submit" value="Apply"></input>
                   </li>
                   <li>
                     Year Released<br></br>
-                    <TextField className="date"/>
+                    <input id="addedMin" value="YYYY"></input>
                     to
-                    <TextField className="date"/>
+                    <input id="addedMax" value="YYYY"></input>
                     <input type="submit" value="Apply"></input>
                   </li>
                   <li>
