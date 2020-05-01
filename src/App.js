@@ -36,6 +36,7 @@ class App extends Component {
     this.removeSelectedPlaylist = this.removeSelectedPlaylist.bind(this);
     this.showPlaylist = this.showPlaylist.bind(this);
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
+
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
     //  this.removeSongs = this.removeSongs.bind(this);
@@ -134,8 +135,6 @@ class App extends Component {
         xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
       },
       success: (data) => {
-        //console.log(data);
-
         if (!data) {
           return;
         }
@@ -196,7 +195,6 @@ class App extends Component {
           return;
         }
 
-
         selectedPlaylist.trackList = data.items;
 
         //add to  selected playlists
@@ -229,9 +227,9 @@ class App extends Component {
       },
     });
   }
-//hi
+
   search(value) {
-    //console.log("hi");
+ 
     var searchCleaned = value.replace(" ", "%20") + "&type=playlist";
     $.ajax({
       url: "https://api.spotify.com/v1/search?q=" + searchCleaned,
@@ -292,7 +290,7 @@ class App extends Component {
 
     this.forceUpdate();
   }
-  
+
   */
 
   playSongs(song) {
@@ -326,7 +324,7 @@ class App extends Component {
 
   filterExplicit() {
     this.setState((prevState, props) => {
-      var newSongSet = prevState.songSet.filter(s => !s.track.explicit)
+      var newSongSet = prevState.songSet.filter((s) => !s.track.explicit);
       return { songSet: newSongSet };
     });
 
@@ -335,9 +333,11 @@ class App extends Component {
 
   filterArtist(artist) {
     this.setState((prevState, props) => {
-      console.log("HELLO")
-      console.log(prevState.songSet[0].track.artists[0])
-      var newSongSet = prevState.songSet.filter(s => (s.track.artists[0]!=artist))
+      console.log("HELLO");
+      console.log(prevState.songSet[0].track.artists[0]);
+      var newSongSet = prevState.songSet.filter(
+        (s) => s.track.artists[0] != artist
+      );
       return { songSet: newSongSet };
     });
 
@@ -345,15 +345,18 @@ class App extends Component {
   }
 
   filterAge(min, max) {
-      //var min = document.getElementById(ageMin).value;
-      //var max = document.getElementById(ageMax).value;
+    //var min = document.getElementById(ageMin).value;
+    //var max = document.getElementById(ageMax).value;
 
-      this.setState((prevState, props) => {
-        var newSongSet = prevState.songSet.filter(s => 
-          (s.track.album.release_date.substring(0,4) < min || s.track.album.release_date.substring(0,4) > max));
-        return { songSet: newSongSet };
-      });
-      this.forceUpdate();
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter(
+        (s) =>
+          s.track.album.release_date.substring(0, 4) < min ||
+          s.track.album.release_date.substring(0, 4) > max
+      );
+      return { songSet: newSongSet };
+    });
+    this.forceUpdate();
   }
 
   filterAdded() {
@@ -597,7 +600,11 @@ class App extends Component {
                 <ul className="playlist-preview-list">
                   <li>
                     Remove Explicits
-                    <input type="submit" value="apply" onClick={()=>this.filterExplicit()}></input>
+                    <input
+                      type="submit"
+                      value="apply"
+                      onClick={() => this.filterExplicit()}
+                    ></input>
                   </li>
                   <li>
                     Year Added<br></br>
@@ -621,10 +628,8 @@ class App extends Component {
                   </li>
                   <li>
                     Remove Artist
-                    <TextField
-                      
-                    />
-                    <input onEnter={artist =>this.filterArtist(artist)} />
+                    <TextField />
+                    <input onEnter={(artist) => this.filterArtist(artist)} />
                   </li>
                 </ul>
               </div>
