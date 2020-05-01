@@ -400,11 +400,12 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filterArtist(artist) {
+  filterArtist() {
+    var filteredName = this.state.filteredArtist;
     this.setState((prevState, props) => {
       console.log(prevState.songSet[0].track.artists[0]);
       var newSongSet = prevState.songSet.filter(
-        (s) => s.track.artists[0] != artist
+        (s) => s.track.artists[0].name != filteredName
       );
       return { songSet: newSongSet };
     });
@@ -428,7 +429,6 @@ class App extends Component {
   }
 
   filterAdded() {
-
     var year = this.state.filteredDate;
     /*  this.state.songSet.forEach(s => {
       var rYear = s.track.album.release_date.substring(0,4);
@@ -701,36 +701,40 @@ class App extends Component {
 
                 <h3>Filters </h3>
                 <ul className="playlist-preview-list">
-                  <li>
+                  <li className="filter-object">
                     Remove Explicits
+                    <div className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.filterExplicit()}
                     ></input>
+                    </div>
                   </li>
-                  <li>
+                  <li className="filter-object" >
                     Year Added<br></br>
                     <TextField
                       ref="yearAdded"
                       type="number"
-                      placeholder="2016"
+                      placeholder="ex: 2016"
                       className="date"
                       value={this.state.textFieldValue}
                       onChange={this.handleDateChange}
                     />
+                    <div className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.filterAdded()}
                     ></input>
+                    </div>
                   </li>
-                  <li>
+                  <li className="filter-object" >
                     Year Released<br></br>
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="2016"
+                    placeholder="ex: 2016"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMinChange}
@@ -739,20 +743,24 @@ class App extends Component {
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="2016"
+                    placeholder="ex: 2017"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMaxChange}
                     />
-                     <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
+                    <div className="apply-button">
+                     <input type="submit" value="Apply"  onClick={()=>this.filterAge()}></input>
+                     </div>
                   </li>
-                  <li>
+                  <li className="filter-object" >
                     Remove Artist
                     <TextField
                       className="date"
                       onChange={this.handleArtistChange}
                     />
-                    <input type="submit" value="Apply"></input>
+                    <div className="apply-button">
+                    <input type="submit" value="Apply" onClick = {()=> this.filterArtist()}></input>
+                    </div>
                   </li>
                 </ul>
               </div>
