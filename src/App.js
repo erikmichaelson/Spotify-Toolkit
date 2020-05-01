@@ -307,9 +307,10 @@ class App extends Component {
   }
 
   savePlaylist() {
-    if (this.state.playlistName == "") {
-      alert("Please Enter A Name for Your Playlist");
-      return;
+    if (this.state.playlistName == "" || this.state.songSet.length == 0) {
+      alert(
+        "Please Enter A Name for Your Playlist Or Add Songs To Your Playlist"
+      );
     } else {
       var sharing = true;
       var collab = false;
@@ -337,21 +338,20 @@ class App extends Component {
           }),
           dataType: "json",
           success: (data) => {
-            console.log("in data");
-            console.log(data);
-            console.log(this.state.songSet);
-
             var uris = [];
             this.state.songSet.forEach((song) => {
               uris.push(song.track.uri);
             });
 
+            var url = data.href + "/tracks?uris=";
+
+            for (var i = 0; i < 100; i++) {
+              url = url + uris[i] + ",";
+            }
+
             //add songs to the playlist
             $.ajax({
-              url:
-                "https://api.spotify.com/v1/me/playlists/" +
-                data.id +
-                "/tracks",
+              url: url,
               type: "POST",
               beforeSend: (xhr) => {
                 xhr.setRequestHeader(
@@ -364,7 +364,20 @@ class App extends Component {
               }),
               dataType: "json",
               success: (data) => {
-                console.log("in data");
+                alert(this.state.playlistName + " was created successfully");
+                this.setState({
+                  token: null,
+                  uris: [],
+                  unselectedPlaylists: [],
+                  selectedPlaylists: [],
+                  previewedPlaylist: [],
+                  playlistName: "",
+                  selectedPreviewedPlaylist: "",
+                  searchedPlaylists: [],
+                  songSet: [],
+                });
+
+                this.componentDidMount();
               },
             });
           },
@@ -416,16 +429,17 @@ class App extends Component {
 
     var year = this.state.filteredDate;
     console.log(year);
-  /*  this.state.songSet.forEach(s => {
+    /*  this.state.songSet.forEach(s => {
       var rYear = s.track.album.release_date.substring(0,4);
           if(rYear < min || rYear > max){
               songs.remove(s);
           }
       });   */
     this.setState((prevState, props) => {
-      console.log(year) //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter(s =>
-        (s.track.album.release_date.substring(0,4) == year));
+      console.log(year); //[0].track.album.release_date.substring(0,4));
+      var newSongSet = prevState.songSet.filter(
+        (s) => s.track.album.release_date.substring(0, 4) == year
+      );
       return { songSet: newSongSet };
     });
 
@@ -668,7 +682,7 @@ class App extends Component {
 
                     return (
                       <li className="song">
-                        {Title} <i style={{color:"#d1d1d1"}}>{Artist}</i>
+                        {Title} <i style={{ color: "#d1d1d1" }}>{Artist}</i>
                       </li>
                     );
                   }, this)}
@@ -698,8 +712,11 @@ class App extends Component {
                       value={this.state.textFieldValue}
                       onChange={this.handleDateChange}
                     />
-                   <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
-
+                    <input
+                      type="submit"
+                      value="apply"
+                      onClick={() => this.filterAdded()}
+                    ></input>
                   </li>
                   <li>
                     Year Released<br></br>
