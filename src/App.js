@@ -397,8 +397,8 @@ class App extends Component {
   }
 
   filterAge(min, max) {
-    //var min = document.getElementById(ageMin).value;
-    //var max = document.getElementById(ageMax).value;
+    var min = this.state.minDate;
+    var max = this.state.maxDate;
 
     this.setState((prevState, props) => {
       var newSongSet = prevState.songSet.filter(
@@ -423,6 +423,10 @@ class App extends Component {
     });
 
     this.forceUpdate();
+  }
+
+  filterLength(){
+
   }
 
   handlePlaylistNameOnChange(event) {
@@ -697,15 +701,23 @@ class App extends Component {
                   <li>
                     Year Released<br></br>
                     <TextField
-                      className="date"
-                      onChange={this.handleMinChange}
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinChange}
                     />
                     to
                     <TextField
-                      className="date"
-                      onChange={this.handleMaxChange}
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxChange}
                     />
-                    <input type="submit" value="Apply"></input>
+                     <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
                   </li>
                   <li>
                     Remove Artist
