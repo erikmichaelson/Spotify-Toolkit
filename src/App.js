@@ -339,6 +339,7 @@ class App extends Component {
           }),
           dataType: "json",
           success: (data) => {
+            console.log(this.state.playlistNames)
             var uris = [];
             this.state.songSet.forEach((song) => {
               uris.push(song.track.uri);
@@ -346,7 +347,7 @@ class App extends Component {
 
             var url = data.href + "/tracks?uris=";
 
-            for (var i = 0; i < 100; i++) {
+            for (var i = 0; i < uris.length; i++) {
               url = url + uris[i] + ",";
             }
 
