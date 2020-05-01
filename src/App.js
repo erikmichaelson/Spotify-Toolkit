@@ -24,7 +24,7 @@ class App extends Component {
       unselectedPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
-      history: [],
+
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
       songSet: [],
@@ -40,8 +40,6 @@ class App extends Component {
     //  this.removeSongs = this.removeSongs.bind(this);
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
-
-    this.revertChange = this.revertChange.bind(this);
 
     this.savePlaylist = this.savePlaylist.bind(this);
     this.saveClick = this.saveClick.bind(this);
@@ -159,16 +157,6 @@ class App extends Component {
   removeSelectedPlaylist(playlist, i) {
     //add to history and add snapshot of previous
     this.setState((prevState, props) => {
-      var placeHolderHistory = prevState.history;
-      placeHolderHistory.unshift({
-        name: "Removed " + playlist.name + " from playlist",
-        snapshot: {
-          selectedPlaylists: prevState.selectedPlaylists,
-          songSet: prevState.songSet,
-          unselectedPlaylists: prevState.unselectedPlaylists
-        },
-      });
-
       //remove rfrom selected playlists
       var placeHolderSelected = prevState.selectedPlaylists;
       placeHolderSelected.splice(i, 1);
@@ -183,7 +171,6 @@ class App extends Component {
       });
 
       return {
-        history: placeHolderHistory,
         selectedPlaylists: placeHolderSelected,
         unselectedPlaylists: placeHolderUnselectedPlaylists,
         songSet: newSongSet,
@@ -208,41 +195,29 @@ class App extends Component {
           return;
         }
 
-        //add to history and add snapshot of previous
+
+        selectedPlaylist.trackList = data.items;
+
+        //add to  selected playlists
+        var placeHolderSelected = this.state.selectedPlaylists;
+        placeHolderSelected.push(selectedPlaylist);
+
+        //take out from unselectd playlists playlists
+        var placeHolderUnselectedPlaylists = this.state.unselectedPlaylists;
+        placeHolderUnselectedPlaylists.splice(i, 1);
+
+        //add new songs
+        var newSongSet = this.state.songSet;
+
+        data.items.forEach((song) => {
+          song.playListID = playlist.id;
+          newSongSet.push(song);
+        });
+
         this.setState((prevState, props) => {
-          console.log("historycheck");
-          console.log(prevState);
-          var placeholderHistory = prevState.history;
-
-          selectedPlaylist.trackList = data.items;
-
-          //set up history
-          placeholderHistory.unshift({
-            name: "Added " + playlist.name + " to playlist",
-            snapshot: {
-              selectedPlaylists: prevState.selectedPlaylists,
-              songSet: prevState.songSet,
-              unselectedPlaylists: prevState.unselectedPlaylists
-            },
-          });
-
-          //add to  selected playlists
-          var placeHolderSelected = prevState.selectedPlaylists;
-          placeHolderSelected.push(selectedPlaylist);
-          
-          //take out from unselectd playlists playlists
-          var placeHolderUnselectedPlaylists = prevState.unselectedPlaylists;
-          placeHolderUnselectedPlaylists.splice(i, 1);
-
-          //add new songs
-          var newSongSet = prevState.songSet;
-          playlist.trackList.forEach((song) => {
-            song.playListID = playlist.id;
-            newSongSet.push(song);
-          });
+          // selectedPlaylist.trackList = data.items;
 
           return {
-            history: placeholderHistory,
             selectedPlaylists: placeHolderSelected,
             unselectedPlaylists: placeHolderUnselectedPlaylists,
             songSet: newSongSet,
@@ -291,28 +266,6 @@ class App extends Component {
     this.setState((prevState, props) => {
       prevState.unselectedPLaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
-    });
-
-    this.forceUpdate();
-  }
-
-  revertChange(snapshot, index) {
-    this.revertChange.bind(this);
-    this.setState((prevState, props) => {
-      var newHistory = [];
-      //only keep the ones after
-      for (var i = index + 1; i < prevState.history.length; i++) {
-        newHistory.push(prevState.history[i]);
-      }
-
-      console.log(snapshot);
-
-      return {
-        selectedPlaylists: snapshot.selectedPlaylists,
-        songSet: snapshot.songSet,
-        history: newHistory,
-        unselectedPlaylists: snapshot.unselectedPlaylists
-      };
     });
 
     this.forceUpdate();
@@ -611,40 +564,20 @@ class App extends Component {
                     <input id="max"></input>
                   </li>
                 </ol>
-
-                <div className="savePlaylist">
-                  <h3>Playlist Options </h3>
-                  <Button
-                    style={{ backgroundColor: "#1DB954" }}
-                    onClick={() => this.savePlaylist("hello")}
-                  >
-                    Save Song Set as Playlist
-                  </Button>
-                  <h4>Playlist Name</h4>
-                  <input id="name"></input>
-                  <ul className="playlist-preview-list"></ul>
-                </div>
               </div>
-            </div>
 
-            <div className="history">
-              <h3>History of Changes </h3>
-              <ul className="history-list">
-                {this.state.history.map(function (change, i) {
-                  return (
-                    <li className="song">
-                      <h3>{change.name}</h3>
-                      <Button
-                        className="song-chip"
-                        onClick={() => this.revertChange(change.snapshot, i)}
-                        style={{ backgroundColor: "red" }}
-                      >
-                        Revert Change
-                      </Button>
-                    </li>
-                  );
-                }, this)}
-              </ul>
+              <div className="savePlaylist">
+                <h3>Playlist Options </h3>
+                <Button
+                  style={{ backgroundColor: "#1DB954" }}
+                  onClick={() => this.savePlaylist("hello")}
+                >
+                  Save Song Set as Playlist
+                </Button>
+                <h4>Playlist Name</h4>
+                <input id="name"></input>
+                <ul className="playlist-preview-list"></ul>
+              </div>
             </div>
 
             <SpotifyPlayer
