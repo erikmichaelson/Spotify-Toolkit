@@ -19,8 +19,17 @@ h1, h2, h3, h4 {
   font-family: 'Courier New', Courier, monospace;
 }
 
+li {
+  font-size: small;
+}
+
+i{
+  text-align: right;
+}
+
 .grid-container {
   margin-top: 0px;
+  margin-left: 15px;
   display: grid;
 /*  grid-auto-columns: 30%; */
   grid-auto-rows: 50%;
@@ -38,8 +47,8 @@ h1, h2, h3, h4 {
   grid-area: a;
   color:white;
   overflow:scroll;
-  height: 600px;
-  width: 300px;
+  height: 520px;
+  width: 20vw;
   box-shadow: 2px 5px 5px 5px #3d434f;
   position: relative;
   text-align: left;
@@ -50,8 +59,8 @@ h1, h2, h3, h4 {
   grid-area: b;
   color:white;
   overflow:scroll;
-  height: 100%;
-  width: 800px;
+  height: 520px;
+  width: 50vw;
   border-radius: 10px;
 
   box-shadow: 2px 5px 5px 5px #3d434f;
@@ -62,8 +71,8 @@ h1, h2, h3, h4 {
   grid-area: d;
   color:white;
   overflow:scroll;
-  height: 500px;
-  width: 300px;
+  height: 520px;
+  width: 20vw;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
 
@@ -73,8 +82,8 @@ h1, h2, h3, h4 {
   grid-area: e;
   color:white;
   overflow:scroll;
-  height: 500px;
-  width: 800px;
+  height: 520px;
+  width: 50vw;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
 
@@ -85,7 +94,7 @@ h1, h2, h3, h4 {
   color:white;
   overflow:scroll;
   height: 100%;
-  width: 400px;
+  width: 20vw;
   box-shadow: 2px 5px 5px 5px #3d434f;
   text-align: left;
 
@@ -96,7 +105,7 @@ h1, h2, h3, h4 {
   color:white;
   overflow:scroll;
   height: 100%;
-  width: 400px;
+  width: 20vw;
   box-shadow: 2px 5px 5px 5px #3d434f;
 
 }
@@ -151,7 +160,10 @@ h1, h2, h3, h4 {
 }
 
 
-
+.date {
+  background-color:white;
+  opacity: .8;
+}
 
 .webPlayer{
   size:20%;
@@ -170,12 +182,12 @@ h1, h2, h3, h4 {
 
 .btn {
   background-color: transparent;
-  border-radius: 2em;
+  border-radius: 1.7em;
   border: 0.2em solid #1ecd97;
   color: #1ecd97;
   cursor: pointer;
   font-size: 3vmin;
-  padding: 0.7em 1.5em;
+  padding: 0.4em 1em;
   text-transform: uppercase;
   transition: all 0.25s ease;
   
@@ -197,8 +209,8 @@ h1, h2, h3, h4 {
 
 /* searchbar css */ 
 .searchbar{
-  widows: 80%;
-  height:200px;
+  widows: 60%;
+  height: 25px; @override
   background-color: transparent;
 }
 

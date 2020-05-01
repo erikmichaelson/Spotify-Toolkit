@@ -356,18 +356,25 @@ class App extends Component {
       this.forceUpdate();
   }
 
-  filterAdded(songs, min, max) {
-    //var min = document.getElementById(addedMin).value;
-    //var max = document.getElementById(addedMax).value;
+  filterAdded() {
+    //var max = this.state.textFieldValue;
 
-    this.state.songSet.forEach(s => {
+    var year = this.refs.yearAdded.getValue();
+    console.log(year);
+  /*  this.state.songSet.forEach(s => {
       var rYear = s.track.album.release_date.substring(0,4);
           if(rYear < min || rYear > max){
               songs.remove(s);
           }
-      });
+      });   */
+    this.setState((prevState, props) => {
+      console.log(year) //[0].track.album.release_date.substring(0,4));
+      var newSongSet = prevState.songSet.filter(s => 
+        (s.track.album.release_date.substring(0,4) == year));
+      return { songSet: newSongSet };
+    });
 
-      this.forceUpdate();
+    this.forceUpdate();
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -571,18 +578,12 @@ class App extends Component {
                 <h4> {this.state.selectedPreviewedPlaylist} </h4>
                 <ul className="playlist-preview-list">
                   {this.state.previewedPlaylist.map(function (song, i) {
-                    const Artist = "Artist : " + song.track.artists[0].name;
-                    const Album = "Album : " + song.track.album.name;
-                    const Title = "Track : " + song.track.name;
+                    const Artist = song.track.artists[0].name;
+                    const Title = song.track.name;
 
                     return (
                       <li className="song">
-                        <Chip
-                          label={Title}
-                          style={{ backgroundColor: "#1DB954" }}
-                        />
-                        <Chip label={Artist} />
-                        <Chip label={Album} />
+                        {Title} <i style={{color:"#d1d1d1"}}>{Artist}</i>
                       </li>
                     );
                   }, this)}
@@ -599,18 +600,23 @@ class App extends Component {
                     <input type="submit" value="apply" onClick={()=>this.filterExplicit()}></input>
                   </li>
                   <li>
-                    Year Released<br></br>
-                    <input id="ageMin" value="YYYY"></input>
-                    <input onChange={value => this.filterAdded(value)} />
-                    to
-                    <input id="ageMax" value="YYYY"></input>
-                    <input type="submit" value="Apply"></input>
+                    Year Added<br></br>
+                    <TextField
+                      ref="yearAdded"
+                      type="number"
+                      placeholder="2016"
+                      className="date"
+                      value={this.state.textFieldValue} 
+                      //onChange={()=>this.filterAdded(this.value)}
+                    />
+                   <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
+
                   </li>
                   <li>
                     Year Released<br></br>
-                    <input id="addedMin" value="YYYY"></input>
+                    <TextField className="date"/>
                     to
-                    <input id="addedMax" value="YYYY"></input>
+                    <TextField className="date"/>
                     <input type="submit" value="Apply"></input>
                   </li>
                   <li>
