@@ -781,7 +781,56 @@ class App extends Component {
                     />
                      <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
                   </li>
-
+                  <li>
+                    Minimum Length<br></br>
+                    <TextField
+                    ref="length"
+                    type="integer"
+                    placeholder="60"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinLength}
+                    />
+                    to
+                    <TextField
+                    ref="length"
+                    type="integer"
+                    placeholder="120"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxLength}
+                    />
+                     <input type="submit" value="apply" onClick={()=>this.filterLength()}></input>
+                  </li>
+                  <li>
+                    Minimum Popularity<br></br>
+                    <TextField
+                    ref="popularity"
+                    type="integer"
+                    placeholder="60"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinPop}
+                    />
+                    to
+                    <TextField
+                    ref="popularity"
+                    type="integer"
+                    placeholder="120"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxPop}
+                    />
+                     <input type="submit" value="apply" onClick={()=>this.filterPopularity()}></input>
+                  </li>
+                  <li>
+                    Remove Artist
+                    <TextField
+                      className="date"
+                      onChange={this.handleArtistChange}
+                    />
+                    <input type="submit" value="Apply"></input>
+                  </li>
 
                 </ul>
               </div>
