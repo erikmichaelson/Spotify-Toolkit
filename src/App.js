@@ -40,7 +40,12 @@ class App extends Component {
     //  this.removeSongs = this.removeSongs.bind(this);
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
+
     this.revertChange = this.revertChange.bind(this);
+
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.saveClick = this.saveClick.bind(this);
+
   }
 
   componentDidMount() {
@@ -330,6 +335,29 @@ class App extends Component {
     });
   }
 
+  savePlaylist(name) {
+    var sharing = true;
+    var collab = false;
+
+    // I need to update permissions for the website
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/playlists",
+      type: "POST",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      data: name + sharing + collab,
+      success: () => {
+        this.forceUpdate();
+      },
+    });
+  }
+
+  saveClick() {
+    var name = prompt("Name your new playlist");
+    this.savePlaylist(name);
+  }
+
   // inspired by the React Tutorial on facebook's website
   render() {
     return (
@@ -550,10 +578,47 @@ class App extends Component {
               </div>
 
               <div className="filters">
+
                 <h3>Edit Your Created Playlist </h3>
+          
+                <h3>Filters </h3>
+                <ol className="playlist-preview-list">
+                  <li>
+                    Remove Explicits
+                    <input type="checkbox"></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input type="date" id="min"></input>
+                    to
+                    <input type="date" id="max"></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input id="min"></input>
+                    to
+                    <input id="max"></input>
+                  </li>
+                </ol>
+                <div className="savePlaylist">
+                <h3>Playlist Options </h3>
+                  <Button style={{ backgroundColor: "#1DB954" }}
+                    onClick = {()=> this.savePlaylist("hello")}
+                  >
+                    Save Song Set as Playlist
+                  </Button>
+                  <h4>Playlist Name</h4>
+                  <input id="name"></input>
+                <ul className="playlist-preview-list">
+                </ul>
+              </div>
+            </div>
               </div>
 
-              <div className="savePlaylist">
+           
+
+
+            <div className="savePlaylist">
                 <h3>History of Changes </h3>
 
                 <ul className="history-list">
@@ -571,9 +636,8 @@ class App extends Component {
                       </li>
                     );
                   }, this)}
-                </ul>
-              </div>
-            </div>
+                  </ul>
+                  </div>
 
             <SpotifyPlayer
               token={this.state.token}
