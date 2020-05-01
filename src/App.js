@@ -36,9 +36,8 @@ class App extends Component {
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
     this.search = this.search.bind(this);
     this.addToPool = this.addToPool.bind(this);
-    this.addSongs = this.addSongs.bind(this);
-    this.removeSongs = this.removeSongs.bind(this);
-    this.replaceSongs = this.replaceSongs.bind(this);
+    //  this.removeSongs = this.removeSongs.bind(this);
+    // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.saveClick = this.saveClick.bind(this);
@@ -105,8 +104,8 @@ class App extends Component {
         if (!data) {
           return;
         }
-        // handling a bug where only one song is being played and context = null 
-        const contextURI = (data.context) ? data.context.uri : data.item.uri;
+        // handling a bug where only one song is being played and context = null
+        const contextURI = data.context ? data.context.uri : data.item.uri;
 
         this.setState({
           uris: [
@@ -155,8 +154,16 @@ class App extends Component {
 
   removeSelectedPlaylist(playlist, i) {
     this.setState((prevState, props) => {
-      selectedPlaylists: prevState.selectedPlaylists.splice(i, 1);
-      yourPlaylists: prevState.yourPlaylists.push(playlist);
+      prevState.selectedPlaylists.splice(i, 1);
+      prevState.yourPlaylists.push(playlist);
+    });
+
+    //add songs to the song set
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter((song) => {
+        return song.playListID != playlist.id;
+      });
+      return { songSet: newSongSet };
     });
 
     this.forceUpdate();
@@ -164,6 +171,8 @@ class App extends Component {
 
   addSelectedPlaylist(playlist, i) {
     var selectedPlaylist = playlist;
+    console.log("check");
+    console.log(playlist);
 
     var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
     $.ajax({
@@ -176,12 +185,23 @@ class App extends Component {
         if (!data) {
           return;
         }
-        //console.log(selectedPlaylist);
+
         selectedPlaylist.trackList = data.items;
         this.setState((prevState, props) => {
-          selectedPlaylists: prevState.selectedPlaylists.push(selectedPlaylist);
-          yourPlaylists: prevState.yourPlaylists.splice(i, 1);
+          prevState.selectedPlaylists.push(selectedPlaylist);
+          prevState.yourPlaylists.splice(i, 1);
         });
+
+        //add songs to the song set
+        this.setState((prevState, props) => {
+          var newSongSet = prevState.songSet;
+          playlist.trackList.forEach((song) => {
+            song.playListID = playlist.id;
+            newSongSet.push(song);
+          });
+          return { songSet: newSongSet };
+        });
+
         this.forceUpdate();
       },
     });
@@ -222,31 +242,19 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      yourPlaylists: prevState.yourPlaylists.push(playlist);
-      searchedPlaylists: prevState.searchedPlaylists.splice(
-        0,
-        prevState.searchedPlaylists.length
-      );
+      prevState.yourPlaylists.push(playlist);
+      prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
     this.forceUpdate();
   }
 
-  addSongs(songs) {
-    console.log(songs);
-    this.addSongs.bind(this);
-    this.setState((prevState, props) => {
-      prevState.songSet = prevState.songSet.concat(songs);
-    });
-
-    this.forceUpdate();
-  }
-
+  /*
   removeSongs(songs) {
     console.log(songs);
     this.removeSongs.bind(this);
     this.setState((prevState, props) => {
-        prevState.songSet = prevState.songSet.filter(x => !songs.includes(x));
+        this.state.songSet = prevState.songSet.filter(x => !second.includes(x));
       }
     );
 
@@ -261,53 +269,12 @@ class App extends Component {
 
     this.forceUpdate();
   }
+  
+  */
 
-  playSongs(songs) {
-    // catch empty sets
-    if(songs.length == 0) { 
-      console.log("no songs selected");
-      return;
-    }
-    var deviceID;
-    // get the device because spotify needs a device to be active
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/player/devices",
-      type: "GET",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
-      },
-      success: (data) => {
-        console.log(data);
-        if (!data) {
-          return;
-        }
-        deviceID = data.devices[0].id;
-        console.log(deviceID);
-      },
-    });
-    // works
-    console.log("played songs: " + songs);
-    var firstSong = songs[0];
-    // fails
-    var uri = firstSong.track.uri;
-    var uriCleaned = "?uri=" + uri.replace(":", "%3A") + "&device_id=";
-
-    // throw in a brute force wait so deviceID isn't undefined
-    setTimeout(()=>this.sendToQueue(deviceID, uriCleaned), 300);
-  }
-
-  sendToQueue(deviceID, uri) {
-    // I need to update permissions for the website
-    console.log("stq called")
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/player/queue/" + uri + deviceID,
-      type: "POST",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
-      },
-      success: () => {
-        this.forceUpdate();
-      },
+  playSongs(song) {
+    this.setState({
+      uris: [song.track.uri, song.track.artists[0].uri, song.track.album.uri],
     });
   }
 
@@ -392,7 +359,7 @@ class App extends Component {
                   {this.state.selectedPlaylists.map(function (playlist, i) {
                     const creator = playlist.owner;
                     const songs = playlist.tracks.total;
-                    const test = creator+"\n"+songs+" songs";
+                    const test = creator + "\n" + songs + " songs";
                     return (
                       <li className="playlist">
                         {/*
@@ -419,7 +386,9 @@ class App extends Component {
                         >
                           <Button
                             style={{ backgroundColor: "red" }}
-                            onClick={() => this.removeSelectedPlaylist(playlist, i) }
+                            onClick={() =>
+                              this.removeSelectedPlaylist(playlist, i)
+                            }
                           >
                             -
                           </Button>
@@ -437,7 +406,6 @@ class App extends Component {
                           effect="solid"
                           multiline={true}
                         />
-
                       </li>
                     );
                   }, this)}
@@ -446,7 +414,7 @@ class App extends Component {
                   {this.state.yourPlaylists.map(function (playlist, i) {
                     const creator = "Creator : " + playlist.owner;
                     const songs = "Playlist Length " + playlist.tracks.total;
-                    const test = creator+"\n"+songs+" songs";
+                    const test = creator + "\n" + songs + " songs";
                     return (
                       <li className="playlist">
                         <a
@@ -490,37 +458,37 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
-                <Button style={{ backgroundColor: "#1DB954" }}>
-                  Go to Editing Area
-                </Button>
               </div>
 
               <div className="venn" id="venn">
                 <h3>Venn Diagram of Selected Playlists </h3>
-                <Venn selectedPlaylists={this.state.selectedPlaylists} addSongs={this.addSongs} />
+                <Venn selectedPlaylists={this.state.selectedPlaylists} />
               </div>
 
               <div className="songSet">
-                <h3>Songs</h3>
-                <Button 
-                  onClick={()=> this.playSongs(this.state.songSet)}
-                  style={{ backgroundColor: "#1DB954" }}
-                >
-                    ►
-                </Button>
+                <h3>
+                  Current Created Playlist : {this.state.songSet.length} Songs
+                </h3>
+
                 <div>
                   <ul className="song-set-list">
                     {this.state.songSet.map(function (song, i) {
                       const Artist = song.track.artists[0].name;
                       const Title = song.track.name;
-
                       return (
                         <li className="song">
+                          <Button className="song-chip"
+                            onClick={() => this.playSongs(song)}
+                            style={{ backgroundColor: "#1DB954" }}
+                          >
+                            ►
+                          </Button>
                           <Chip
+                            className="song-chip"
                             label={Title}
                             style={{ backgroundColor: "#1DB954" }}
                           />
-                          <Chip label={Artist} />
+                          <Chip className="song-chip" label={Artist} />
                         </li>
                       );
                     }, this)}

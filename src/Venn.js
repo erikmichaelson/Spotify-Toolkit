@@ -7,13 +7,20 @@ import "./Venn.css";
 class Venn extends React.Component {
   constructor(props) {
     super(props);
+   
 
-    this.addSongs = this.props.addSongs.bind(props.this);
+   // this.addSongs = this.props.addSongs.bind(props.this);
   }
+
+
+
 
   componentDidUpdate() {
     var chart = venn.VennDiagram();
     var div = d3.select("#venn");
+
+  
+    
     d3.select("#venn")
       .datum(this.getSets(this.props.selectedPlaylists))
       .call(chart);
@@ -80,7 +87,7 @@ class Venn extends React.Component {
           .style("stroke-opacity", 0);
       })
       
-      .on("click", (d, i) => this.addSongs(d.songs));
+     // .on("click", (d, i) => this.addSongs(d.songs));
   }
 
 
