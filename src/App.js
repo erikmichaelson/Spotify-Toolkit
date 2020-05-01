@@ -428,7 +428,6 @@ class App extends Component {
     //var max = this.state.textFieldValue;
 
     var year = this.state.filteredDate;
-    console.log(year);
     /*  this.state.songSet.forEach(s => {
       var rYear = s.track.album.release_date.substring(0,4);
           if(rYear < min || rYear > max){
@@ -437,9 +436,11 @@ class App extends Component {
       });   */
     this.setState((prevState, props) => {
       console.log(year); //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter(
-        (s) => s.track.album.release_date.substring(0, 4) == year
-      );
+      var newSongSet = prevState.songSet.filter((s) => {
+       
+       return  parseInt(s.added_at.substring(0, 4)) >= parseInt(year)
+      })
+      
       return { songSet: newSongSet };
     });
 
@@ -698,7 +699,7 @@ class App extends Component {
                     Remove Explicits
                     <input
                       type="submit"
-                      value="apply"
+                      value="Apply"
                       onClick={() => this.filterExplicit()}
                     ></input>
                   </li>
@@ -714,7 +715,7 @@ class App extends Component {
                     />
                     <input
                       type="submit"
-                      value="apply"
+                      value="Apply"
                       onClick={() => this.filterAdded()}
                     ></input>
                   </li>
