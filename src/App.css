@@ -52,6 +52,7 @@ i{
   box-shadow: 2px 5px 5px 5px #3d434f;
   position: relative;
   text-align: left;
+  margin-bottom:20px;
   
 }
 
@@ -143,10 +144,12 @@ i{
 
 .playlist{
   display: inline-block;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   width: 100%;
   text-align: left;
+
+  
 
 }
 
