@@ -28,6 +28,10 @@ class App extends Component {
       playlistName: "",
       filteredArtist: "",
       filteredDate: "",
+      lengthMin:"",
+      lengthMax:"",
+      popMin:"",
+      popMax:"",
       minDate: "",
       maxDate: "",
       selectedPreviewedPlaylist: "",
@@ -53,6 +57,10 @@ class App extends Component {
     this.handleDateChange = this.handleDateChange.bind(this);
     this.handleMinChange = this.handleMinChange.bind(this);
     this.handleMaxChange = this.handleMaxChange.bind(this);
+    this.handleMinLength = this.handleMinLength.bind(this);
+    this.handleMaxLength = this.handleMaxLength.bind(this);
+    this.handleMinPop = this.handleMinPop.bind(this);
+    this.handleMaxPop = this.handleMaxPop.bind(this);
 
     this.handlePlaylistNameOnChange = this.handlePlaylistNameOnChange.bind(
       this
@@ -307,10 +315,8 @@ class App extends Component {
   }
 
   savePlaylist() {
-    if (this.state.playlistName == "" || this.state.songSet.length == 0) {
-      alert(
-        "Please Enter A Name for Your Playlist Or Add Songs To Your Playlist"
-      );
+    if (this.state.playlistName == "") {
+      alert("Please Enter A Name for Your Playlist");
       return;
     } else {
       var sharing = true;
@@ -339,22 +345,21 @@ class App extends Component {
           }),
           dataType: "json",
           success: (data) => {
-         
+            console.log("in data");
+            console.log(data);
+            console.log(this.state.songSet);
 
             var uris = [];
             this.state.songSet.forEach((song) => {
               uris.push(song.track.uri);
             });
 
-            var url = data.href + "/tracks?uris=";
-
-            for (var i = 0; i < 100; i++) {
-              url = url + uris[i] + ",";
-            }
-
             //add songs to the playlist
             $.ajax({
-              url:url,
+              url:
+                "https://api.spotify.com/v1/me/playlists/" +
+                data.id +
+                "/tracks",
               type: "POST",
               beforeSend: (xhr) => {
                 xhr.setRequestHeader(
@@ -367,20 +372,7 @@ class App extends Component {
               }),
               dataType: "json",
               success: (data) => {
-                alert(this.state.playlistName + " was created successfully");
-                this.setState({
-                  token: null,
-                  uris: [],
-                  unselectedPlaylists: [],
-                  selectedPlaylists: [],
-                  previewedPlaylist: [],
-                  playlistName: "",
-                  selectedPreviewedPlaylist: "",
-                  searchedPlaylists: [],
-                  songSet: [],
-                });
-
-                this.componentDidMount();
+                console.log("in data");
               },
             });
           },
@@ -400,12 +392,11 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filterArtist() {
-    var filteredName = this.state.filteredArtist;
+  filterArtist(artist) {
     this.setState((prevState, props) => {
       console.log(prevState.songSet[0].track.artists[0]);
       var newSongSet = prevState.songSet.filter(
-        (s) => s.track.artists[0].name != filteredName
+        (s) => s.track.artists[0] != artist
       );
       return { songSet: newSongSet };
     });
@@ -427,30 +418,53 @@ class App extends Component {
     });
     this.forceUpdate();
   }
+  filterPopularity(){
+    var minn = this.state.popMin;
+    var maxx = this.state.popMax;
+  //  console.log(minn + "-" + maxx)
 
-  filterAdded() {
-    var year = this.state.filteredDate;
-    /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
     this.setState((prevState, props) => {
-      console.log(year); //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter((s) => {
-       
-       return  parseInt(s.added_at.substring(0, 4)) >= parseInt(year)
-      })
-      
+      var newSongSet = prevState.songSet.filter(
+        (s) =>
+          s.track.album.popularity < minn ||
+          s.track.album.popularity > maxx
+      );
       return { songSet: newSongSet };
     });
-
     this.forceUpdate();
   }
 
   filterLength(){
 
+    var minnn = this.state.lengthMin;
+    var maxxx = this.state.lengthMax;
+    //  console.log(minnn + "-" + maxxx)
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter(
+        (s) =>
+
+          s.track.album.duration_ms/1000 < minnn ||
+          s.track.album.duration_ms/1000 > maxxx
+      );
+      return { songSet: newSongSet };
+    });
+    this.forceUpdate();
+  }
+
+
+
+  filterAdded() {
+
+    var year = this.state.filteredDate;
+    console.log(year);
+    this.setState((prevState, props) => {
+      console.log(year) //[0].track.album.release_date.substring(0,4));
+      var newSongSet = prevState.songSet.filter(s =>
+        (s.track.album.release_date.substring(0,4) == year));
+      return { songSet: newSongSet };
+    });
+
+    this.forceUpdate();
   }
 
   handlePlaylistNameOnChange(event) {
@@ -480,6 +494,30 @@ class App extends Component {
   handleDateChange(event) {
     this.setState({
       filteredDate: event.target.value,
+    });
+  }
+
+  handleMinLength(event) {
+    this.setState({
+      lengthMin: event.target.value,
+    });
+  }
+
+  handleMaxLength(event) {
+    this.setState({
+      lengthMax: event.target.value,
+    });
+  }
+
+  handleMinPop(event) {
+    this.setState({
+      popMin: event.target.value,
+    });
+  }
+
+  handleMaxPop(event) {
+    this.setState({
+      popMax: event.target.value,
     });
   }
 
@@ -701,40 +739,33 @@ class App extends Component {
 
                 <h3>Filters </h3>
                 <ul className="playlist-preview-list">
-                  <li className="filter-object">
+                  <li>
                     Remove Explicits
-                    <div className="apply-button">
                     <input
                       type="submit"
-                      value="Apply"
+                      value="apply"
                       onClick={() => this.filterExplicit()}
                     ></input>
-                    </div>
                   </li>
-                  <li className="filter-object" >
+                  <li>
                     Year Added<br></br>
                     <TextField
                       ref="yearAdded"
                       type="number"
-                      placeholder="ex: 2016"
+                      placeholder="2016"
                       className="date"
                       value={this.state.textFieldValue}
                       onChange={this.handleDateChange}
                     />
-                    <div className="apply-button">
-                    <input
-                      type="submit"
-                      value="Apply"
-                      onClick={() => this.filterAdded()}
-                    ></input>
-                    </div>
+                   <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
+
                   </li>
-                  <li className="filter-object" >
+                  <li>
                     Year Released<br></br>
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="ex: 2016"
+                    placeholder="2016"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMinChange}
@@ -743,25 +774,64 @@ class App extends Component {
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="ex: 2017"
+                    placeholder="2016"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMaxChange}
                     />
-                    <div className="apply-button">
-                     <input type="submit" value="Apply"  onClick={()=>this.filterAge()}></input>
-                     </div>
+                     <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
                   </li>
-                  <li className="filter-object" >
+                  <li>
+                    Minimum Length<br></br>
+                    <TextField
+                    ref="length"
+                    type="integer"
+                    placeholder="60"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinLength}
+                    />
+                    to
+                    <TextField
+                    ref="length"
+                    type="integer"
+                    placeholder="120"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxLength}
+                    />
+                     <input type="submit" value="apply" onClick={()=>this.filterLength()}></input>
+                  </li>
+                  <li>
+                    Minimum Popularity<br></br>
+                    <TextField
+                    ref="popularity"
+                    type="integer"
+                    placeholder="60"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinPop}
+                    />
+                    to
+                    <TextField
+                    ref="popularity"
+                    type="integer"
+                    placeholder="120"
+                    className="integer"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxPop}
+                    />
+                     <input type="submit" value="apply" onClick={()=>this.filterPopularity()}></input>
+                  </li>
+                  <li>
                     Remove Artist
                     <TextField
                       className="date"
                       onChange={this.handleArtistChange}
                     />
-                    <div className="apply-button">
-                    <input type="submit" value="Apply" onClick = {()=> this.filterArtist()}></input>
-                    </div>
+                    <input type="submit" value="Apply"></input>
                   </li>
+
                 </ul>
               </div>
 
