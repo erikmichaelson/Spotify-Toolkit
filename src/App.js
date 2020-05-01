@@ -553,15 +553,30 @@ class App extends Component {
 
               <div className="filters">
                 <h3>Filters </h3>
-                <h4> {this.state.selectedPreviewedPlaylist} </h4>
-                <ul className="playlist-preview-list">
-                </ul>
+                <ol className="playlist-preview-list">
+                  <li>
+                    Remove Explicits
+                    <input type="checkbox"></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input type="date" id="min"></input>
+                    to
+                    <input type="date" id="max"></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input id="min"></input>
+                    to
+                    <input id="max"></input>
+                  </li>
+                </ol>
               </div>
 
               <div className="savePlaylist">
                 <h3>Playlist Options </h3>
                   <Button style={{ backgroundColor: "#1DB954" }}
-                    onClick = {()=> this.savePlaylist(name)}
+                    onClick = {()=> this.savePlaylist("hello")}
                   >
                     Save Song Set as Playlist
                   </Button>
