@@ -16,7 +16,7 @@ function filterAge(songs, min, max) {
     return songs;
 }
 
-function filter(songs, min, max) {
+function filterAdded(songs, min, max) {
     violations = [];
     songs.forEach(s => {
         rYear = s.track.album.release_date.substring(0,4);

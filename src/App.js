@@ -11,6 +11,7 @@ import Venn from "./Venn.js";
 import SearchField from "react-search-field";
 import ReactTooltip from "react-tooltip";
 import "./App.css";
+import TextField from 'material-ui/TextField';
 import { axisRight } from "d3";
 
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
@@ -301,6 +302,52 @@ class App extends Component {
     this.savePlaylist(name);
   }
 
+  filterExplicit() {
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter(s => !s.track.explicit)
+      return { songSet: newSongSet };
+    });
+
+    this.forceUpdate();
+  }
+
+  filterArtist(artist) {
+    this.setState((prevState, props) => {
+      console.log("HELLO")
+      console.log(prevState.songSet[0].track.artists[0])
+      var newSongSet = prevState.songSet.filter(s => (s.track.artists[0]!=artist))
+      return { songSet: newSongSet };
+    });
+
+    this.forceUpdate();
+  }
+
+  filterAge(min, max) {
+      //var min = document.getElementById(ageMin).value;
+      //var max = document.getElementById(ageMax).value;
+
+      this.setState((prevState, props) => {
+        var newSongSet = prevState.songSet.filter(s => 
+          (s.track.album.release_date.substring(0,4) < min || s.track.album.release_date.substring(0,4) > max));
+        return { songSet: newSongSet };
+      });
+      this.forceUpdate();
+  }
+
+  filterAdded(songs, min, max) {
+    //var min = document.getElementById(addedMin).value;
+    //var max = document.getElementById(addedMax).value;
+
+    this.state.songSet.forEach(s => {
+      var rYear = s.track.album.release_date.substring(0,4);
+          if(rYear < min || rYear > max){
+              songs.remove(s);
+          }
+      });
+
+      this.forceUpdate();
+  }
+
   // inspired by the React Tutorial on facebook's website
   render() {
     return (
@@ -521,24 +568,34 @@ class App extends Component {
 
               <div className="filters">
                 <h3>Filters </h3>
-                <ol className="playlist-preview-list">
+                <ul className="playlist-preview-list">
                   <li>
                     Remove Explicits
-                    <input type="checkbox"></input>
+                    <input type="submit" value="apply" onClick={()=>this.filterExplicit()}></input>
                   </li>
                   <li>
                     Year Released<br></br>
-                    <input type="date" id="min"></input>
+                    <input id="ageMin" value="YYYY"></input>
+                    <input onChange={value => this.filterAdded(value)} />
                     to
-                    <input type="date" id="max"></input>
+                    <input id="ageMax" value="YYYY"></input>
+                    <input type="submit" value="Apply"></input>
                   </li>
                   <li>
                     Year Released<br></br>
-                    <input id="min"></input>
+                    <input id="addedMin" value="YYYY"></input>
                     to
-                    <input id="max"></input>
+                    <input id="addedMax" value="YYYY"></input>
+                    <input type="submit" value="Apply"></input>
                   </li>
-                </ol>
+                  <li>
+                    Remove Artist
+                    <TextField
+                      
+                    />
+                    <input onEnter={artist =>this.filterArtist(artist)} />
+                  </li>
+                </ul>
               </div>
 
               <div className="savePlaylist">
