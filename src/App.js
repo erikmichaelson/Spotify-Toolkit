@@ -24,6 +24,7 @@ class App extends Component {
       yourPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
+      history: [],
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
       songSet: [],
@@ -39,6 +40,7 @@ class App extends Component {
     //  this.removeSongs = this.removeSongs.bind(this);
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
+    this.revertChange = this.revertChange.bind(this);
   }
 
   componentDidMount() {
@@ -151,9 +153,27 @@ class App extends Component {
   }
 
   removeSelectedPlaylist(playlist, i) {
+
+  //add to history and add snapshot of previous
+  this.setState((prevState, props) => {
+    var placeHolder = prevState.history
+    placeHolder.unshift({
+      name: "Removed " + playlist.name + " from playlist",
+      snapshot: {
+        selectedPlaylists: prevState.selectedPlaylists,
+        songSet: prevState.songSet,
+      },
+    })
+
     this.setState((prevState, props) => {
       prevState.selectedPlaylists.splice(i, 1);
       prevState.yourPlaylists.push(playlist);
+    });
+
+  
+      return {
+        history: placeHolder
+      };
     });
 
     //add songs to the song set
@@ -183,6 +203,21 @@ class App extends Component {
         if (!data) {
           return;
         }
+
+        //add to history and add snapshot of previous
+        this.setState((prevState, props) => {
+          var placeholder = prevState.history
+          placeholder.unshift({
+            name: "Added " + playlist.name + " to playlist",
+            snapshot: {
+              selectedPlaylists: prevState.selectedPlaylists,
+              songSet: prevState.songSet,
+            }})
+
+          return {
+            history: placeholder
+          };
+        });
 
         selectedPlaylist.trackList = data.items;
         this.setState((prevState, props) => {
@@ -242,6 +277,25 @@ class App extends Component {
     this.setState((prevState, props) => {
       prevState.yourPlaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
+    });
+
+    this.forceUpdate();
+  }
+
+  revertChange(snapshot, index) {
+    this.revertChange.bind(this);
+    this.setState((prevState, props) => {
+      var newHistory = [];
+      //only keep the ones after
+      for (var i = index; i < prevState.history.length; i++) {
+        newHistory.push(prevState.history[i]);
+      }
+
+      return {
+        selectedPlaylists: snapshot.selectedPlaylists,
+        songSet: snapshot.songSet,
+        history: newHistory,
+      };
     });
 
     this.forceUpdate();
@@ -452,7 +506,8 @@ class App extends Component {
                       const Title = song.track.name;
                       return (
                         <li className="song">
-                          <Button className="song-chip"
+                          <Button
+                            className="song-chip"
                             onClick={() => this.playSongs(song)}
                             style={{ backgroundColor: "#1DB954" }}
                           >
@@ -495,15 +550,28 @@ class App extends Component {
               </div>
 
               <div className="filters">
-                <h3>Filters </h3>
-
-                <ul className="playlist-preview-list"></ul>
+                <h3>Edit Your Created Playlist </h3>
               </div>
 
               <div className="savePlaylist">
-                <h3>Playlist Options </h3>
+                <h3>History of Changes </h3>
 
-                <ul className="playlist-preview-list"></ul>
+                <ul className="history-list">
+                  {this.state.history.map(function (change, i) {
+                    return (
+                      <li className="song">
+                        <h3>{change.name}</h3>
+                        <Button
+                          className="song-chip"
+                          onClick={() => this.revertChange(change.snapshot, i)}
+                          style={{ backgroundColor: "red" }}
+                        >
+                          Revert Change
+                        </Button>
+                      </li>
+                    );
+                  }, this)}
+                </ul>
               </div>
             </div>
 
