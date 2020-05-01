@@ -392,12 +392,11 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filterArtist() {
-    var filteredName = this.state.filteredArtist;
+  filterArtist(artist) {
     this.setState((prevState, props) => {
       console.log(prevState.songSet[0].track.artists[0]);
       var newSongSet = prevState.songSet.filter(
-        (s) => s.track.artists[0].name != filteredName
+        (s) => s.track.artists[0] != artist
       );
       return { songSet: newSongSet };
     });
@@ -420,25 +419,15 @@ class App extends Component {
     this.forceUpdate();
   }
   filterPopularity(){
-    var min = this.state.popMin;
-    var max = this.state.popMax;
+    var minn = this.state.popMin;
+    var maxx = this.state.popMax;
+  //  console.log(minn + "-" + maxx)
 
-<<<<<<< HEAD
-=======
-  filterAdded() {
-    var year = this.state.filteredDate;
-    /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
->>>>>>> 13232171200978c113179a18820a2324043f103c
     this.setState((prevState, props) => {
       var newSongSet = prevState.songSet.filter(
         (s) =>
-          s.track.album.popularity > min ||
-          s.track.album.popularity < max
+          s.track.album.popularity < minn ||
+          s.track.album.popularity > maxx
       );
       return { songSet: newSongSet };
     });
@@ -446,14 +435,16 @@ class App extends Component {
   }
 
   filterLength(){
-    var min = this.state.lengthMin;
-    var max = this.state.lengthMax;
 
+    var minnn = this.state.lengthMin;
+    var maxxx = this.state.lengthMax;
+    //  console.log(minnn + "-" + maxxx)
     this.setState((prevState, props) => {
       var newSongSet = prevState.songSet.filter(
         (s) =>
-          s.track.album.duration_ms/1000 > min ||
-          s.track.album.duration_ms/1000 < max
+
+          s.track.album.duration_ms/1000 < minnn ||
+          s.track.album.duration_ms/1000 > maxxx
       );
       return { songSet: newSongSet };
     });
@@ -748,45 +739,33 @@ class App extends Component {
 
                 <h3>Filters </h3>
                 <ul className="playlist-preview-list">
-                  <li className="filter-object">
+                  <li>
                     Remove Explicits
-                    <div className="apply-button">
                     <input
                       type="submit"
                       value="apply"
                       onClick={() => this.filterExplicit()}
                     ></input>
-                    </div>
                   </li>
-                  <li className="filter-object" >
+                  <li>
                     Year Added<br></br>
                     <TextField
                       ref="yearAdded"
                       type="number"
-                      placeholder="ex: 2016"
+                      placeholder="2016"
                       className="date"
                       value={this.state.textFieldValue}
                       onChange={this.handleDateChange}
                     />
-<<<<<<< HEAD
                    <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
 
-=======
-                    <div className="apply-button">
-                    <input
-                      type="submit"
-                      value="Apply"
-                      onClick={() => this.filterAdded()}
-                    ></input>
-                    </div>
->>>>>>> 13232171200978c113179a18820a2324043f103c
                   </li>
-                  <li className="filter-object" >
+                  <li>
                     Year Released<br></br>
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="ex: 2016"
+                    placeholder="2016"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMinChange}
@@ -795,32 +774,29 @@ class App extends Component {
                     <TextField
                     ref="yearAdded"
                     type="number"
-                    placeholder="ex: 2017"
+                    placeholder="2016"
                     className="date"
                     value={this.state.textFieldValue}
                     onChange={this.handleMaxChange}
                     />
-                    <div className="apply-button">
-                     <input type="submit" value="Apply"  onClick={()=>this.filterAge()}></input>
-                     </div>
+                     <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
                   </li>
-<<<<<<< HEAD
                   <li>
                     Minimum Length<br></br>
                     <TextField
                     ref="length"
-                    type="number"
+                    type="integer"
                     placeholder="60"
-                    className="date"
+                    className="integer"
                     value={this.state.textFieldValue}
                     onChange={this.handleMinLength}
                     />
                     to
                     <TextField
                     ref="length"
-                    type="number"
+                    type="integer"
                     placeholder="120"
-                    className="date"
+                    className="integer"
                     value={this.state.textFieldValue}
                     onChange={this.handleMaxLength}
                     />
@@ -830,35 +806,30 @@ class App extends Component {
                     Minimum Popularity<br></br>
                     <TextField
                     ref="popularity"
-                    type="number"
+                    type="integer"
                     placeholder="60"
-                    className="pop"
+                    className="integer"
                     value={this.state.textFieldValue}
                     onChange={this.handleMinPop}
                     />
                     to
                     <TextField
                     ref="popularity"
-                    type="number"
+                    type="integer"
                     placeholder="120"
-                    className="pop"
+                    className="integer"
                     value={this.state.textFieldValue}
                     onChange={this.handleMaxPop}
                     />
                      <input type="submit" value="apply" onClick={()=>this.filterPopularity()}></input>
                   </li>
                   <li>
-=======
-                  <li className="filter-object" >
->>>>>>> 13232171200978c113179a18820a2324043f103c
                     Remove Artist
                     <TextField
                       className="date"
                       onChange={this.handleArtistChange}
                     />
-                    <div className="apply-button">
-                    <input type="submit" value="Apply" onClick = {()=> this.filterArtist()}></input>
-                    </div>
+                    <input type="submit" value="Apply"></input>
                   </li>
 
                 </ul>
