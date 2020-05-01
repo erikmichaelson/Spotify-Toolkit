@@ -361,7 +361,20 @@ class App extends Component {
               }),
               dataType: "json",
               success: (data) => {
-                console.log("in data");
+                alert(this.state.playlistName + " was created successfully");
+                this.setState({
+                  token: null,
+                  uris: [],
+                  unselectedPlaylists: [],
+                  selectedPlaylists: [],
+                  previewedPlaylist: [],
+                  playlistName: "",
+                  selectedPreviewedPlaylist: "",
+                  searchedPlaylists: [],
+                  songSet: [],
+                });
+
+                this.componentDidMount();
               },
             });
           },
