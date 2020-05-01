@@ -311,6 +311,7 @@ class App extends Component {
       alert(
         "Please Enter A Name for Your Playlist Or Add Songs To Your Playlist"
       );
+      return;
     } else {
       var sharing = true;
       var collab = false;
@@ -338,6 +339,8 @@ class App extends Component {
           }),
           dataType: "json",
           success: (data) => {
+         
+
             var uris = [];
             this.state.songSet.forEach((song) => {
               uris.push(song.track.uri);
@@ -351,7 +354,7 @@ class App extends Component {
 
             //add songs to the playlist
             $.ajax({
-              url: url,
+              url:url,
               type: "POST",
               beforeSend: (xhr) => {
                 xhr.setRequestHeader(
@@ -410,8 +413,8 @@ class App extends Component {
   }
 
   filterAge(min, max) {
-    //var min = document.getElementById(ageMin).value;
-    //var max = document.getElementById(ageMax).value;
+    var min = this.state.minDate;
+    var max = this.state.maxDate;
 
     this.setState((prevState, props) => {
       var newSongSet = prevState.songSet.filter(
@@ -425,7 +428,6 @@ class App extends Component {
   }
 
   filterAdded() {
-    //var max = this.state.textFieldValue;
 
     var year = this.state.filteredDate;
     /*  this.state.songSet.forEach(s => {
@@ -445,6 +447,10 @@ class App extends Component {
     });
 
     this.forceUpdate();
+  }
+
+  filterLength(){
+
   }
 
   handlePlaylistNameOnChange(event) {
@@ -683,7 +689,7 @@ class App extends Component {
 
                     return (
                       <li className="song">
-                        {Title} <i style={{ color: "#d1d1d1" }}>{Artist}</i>
+                        {Title} <i style={{color:"#d1d1d1"}}>{Artist}</i>
                       </li>
                     );
                   }, this)}
@@ -722,15 +728,23 @@ class App extends Component {
                   <li>
                     Year Released<br></br>
                     <TextField
-                      className="date"
-                      onChange={this.handleMinChange}
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinChange}
                     />
                     to
                     <TextField
-                      className="date"
-                      onChange={this.handleMaxChange}
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxChange}
                     />
-                    <input type="submit" value="Apply"></input>
+                     <input type="submit" value="apply" onClick={()=>this.filterAge()}></input>
                   </li>
                   <li>
                     Remove Artist
