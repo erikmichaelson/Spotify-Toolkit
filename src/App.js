@@ -303,7 +303,9 @@ class App extends Component {
 
   savePlaylist() {
     if (this.state.playlistName == "" || this.state.songSet.length == 0) {
-      alert("Please Enter A Name for Your Playlist Or Add Songs To Your Playlist");
+      alert(
+        "Please Enter A Name for Your Playlist Or Add Songs To Your Playlist"
+      );
       return;
     } else {
       var sharing = true;
