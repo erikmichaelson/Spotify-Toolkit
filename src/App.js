@@ -412,16 +412,9 @@ class App extends Component {
   }
 
   filterAdded() {
-    //var max = this.state.textFieldValue;
 
     var year = this.state.filteredDate;
     console.log(year);
-  /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
     this.setState((prevState, props) => {
       console.log(year) //[0].track.album.release_date.substring(0,4));
       var newSongSet = prevState.songSet.filter(s =>
