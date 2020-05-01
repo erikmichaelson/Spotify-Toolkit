@@ -21,7 +21,7 @@ class App extends Component {
     this.state = {
       token: null,
       uris: [],
-      yourPlaylists: [],
+      unselectedPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
       history: [],
@@ -45,7 +45,6 @@ class App extends Component {
 
     this.savePlaylist = this.savePlaylist.bind(this);
     this.saveClick = this.saveClick.bind(this);
-
   }
 
   componentDidMount() {
@@ -89,7 +88,7 @@ class App extends Component {
           });
         });
         this.setState({
-          yourPlaylists: playlistNames,
+          unselectedPlaylists: playlistNames,
         });
       },
     });
@@ -158,35 +157,37 @@ class App extends Component {
   }
 
   removeSelectedPlaylist(playlist, i) {
-
-  //add to history and add snapshot of previous
-  this.setState((prevState, props) => {
-    var placeHolder = prevState.history
-    placeHolder.unshift({
-      name: "Removed " + playlist.name + " from playlist",
-      snapshot: {
-        selectedPlaylists: prevState.selectedPlaylists,
-        songSet: prevState.songSet,
-      },
-    })
-
+    //add to history and add snapshot of previous
     this.setState((prevState, props) => {
-      prevState.selectedPlaylists.splice(i, 1);
-      prevState.yourPlaylists.push(playlist);
-    });
+      var placeHolderHistory = prevState.history;
+      placeHolderHistory.unshift({
+        name: "Removed " + playlist.name + " from playlist",
+        snapshot: {
+          selectedPlaylists: prevState.selectedPlaylists,
+          songSet: prevState.songSet,
+          unselectedPlaylists: prevState.unselectedPlaylists
+        },
+      });
 
-  
-      return {
-        history: placeHolder
-      };
-    });
+      //remove rfrom selected playlists
+      var placeHolderSelected = prevState.selectedPlaylists;
+      placeHolderSelected.splice(i, 1);
 
-    //add songs to the song set
-    this.setState((prevState, props) => {
+      //add to selected playlists
+      var placeHolderUnselectedPlaylists = prevState.unselectedPlaylists;
+      placeHolderUnselectedPlaylists.push(playlist);
+
+      //remove songs
       var newSongSet = prevState.songSet.filter((song) => {
         return song.playListID != playlist.id;
       });
-      return { songSet: newSongSet };
+
+      return {
+        history: placeHolderHistory,
+        selectedPlaylists: placeHolderSelected,
+        unselectedPlaylists: placeHolderUnselectedPlaylists,
+        songSet: newSongSet,
+      };
     });
 
     this.forceUpdate();
@@ -194,8 +195,6 @@ class App extends Component {
 
   addSelectedPlaylist(playlist, i) {
     var selectedPlaylist = playlist;
-    console.log("check");
-    console.log(playlist);
 
     var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
     $.ajax({
@@ -211,33 +210,43 @@ class App extends Component {
 
         //add to history and add snapshot of previous
         this.setState((prevState, props) => {
-          var placeholder = prevState.history
-          placeholder.unshift({
+          console.log("historycheck");
+          console.log(prevState);
+          var placeholderHistory = prevState.history;
+
+          selectedPlaylist.trackList = data.items;
+
+          //set up history
+          placeholderHistory.unshift({
             name: "Added " + playlist.name + " to playlist",
             snapshot: {
               selectedPlaylists: prevState.selectedPlaylists,
               songSet: prevState.songSet,
-            }})
+              unselectedPlaylists: prevState.unselectedPlaylists
+            },
+          });
 
-          return {
-            history: placeholder
-          };
-        });
+          //add to  selected playlists
+          var placeHolderSelected = prevState.selectedPlaylists;
+          placeHolderSelected.push(selectedPlaylist);
+          
+          //take out from unselectd playlists playlists
+          var placeHolderUnselectedPlaylists = prevState.unselectedPlaylists;
+          placeHolderUnselectedPlaylists.splice(i, 1);
 
-        selectedPlaylist.trackList = data.items;
-        this.setState((prevState, props) => {
-          prevState.selectedPlaylists.push(selectedPlaylist);
-          prevState.yourPlaylists.splice(i, 1);
-        });
-
-        //add songs to the song set
-        this.setState((prevState, props) => {
+          //add new songs
           var newSongSet = prevState.songSet;
           playlist.trackList.forEach((song) => {
             song.playListID = playlist.id;
             newSongSet.push(song);
           });
-          return { songSet: newSongSet };
+
+          return {
+            history: placeholderHistory,
+            selectedPlaylists: placeHolderSelected,
+            unselectedPlaylists: placeHolderUnselectedPlaylists,
+            songSet: newSongSet,
+          };
         });
 
         this.forceUpdate();
@@ -280,7 +289,7 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      prevState.yourPlaylists.push(playlist);
+      prevState.unselectedPLaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
@@ -292,14 +301,17 @@ class App extends Component {
     this.setState((prevState, props) => {
       var newHistory = [];
       //only keep the ones after
-      for (var i = index; i < prevState.history.length; i++) {
+      for (var i = index + 1; i < prevState.history.length; i++) {
         newHistory.push(prevState.history[i]);
       }
+
+      console.log(snapshot);
 
       return {
         selectedPlaylists: snapshot.selectedPlaylists,
         songSet: snapshot.songSet,
         history: newHistory,
+        unselectedPlaylists: snapshot.unselectedPlaylists
       };
     });
 
@@ -468,7 +480,7 @@ class App extends Component {
                   }, this)}
                 </ul>
                 <ul class="playlist-select-list">
-                  {this.state.yourPlaylists.map(function (playlist, i) {
+                  {this.state.unselectedPlaylists.map(function (playlist, i) {
                     const creator = "Creator : " + playlist.owner;
                     const songs = "Playlist Length " + playlist.tracks.total;
                     const test = creator + "\n" + songs + " songs";
@@ -578,9 +590,8 @@ class App extends Component {
               </div>
 
               <div className="filters">
-
                 <h3>Edit Your Created Playlist </h3>
-          
+
                 <h3>Filters </h3>
                 <ol className="playlist-preview-list">
                   <li>
@@ -600,44 +611,41 @@ class App extends Component {
                     <input id="max"></input>
                   </li>
                 </ol>
+
                 <div className="savePlaylist">
-                <h3>Playlist Options </h3>
-                  <Button style={{ backgroundColor: "#1DB954" }}
-                    onClick = {()=> this.savePlaylist("hello")}
+                  <h3>Playlist Options </h3>
+                  <Button
+                    style={{ backgroundColor: "#1DB954" }}
+                    onClick={() => this.savePlaylist("hello")}
                   >
                     Save Song Set as Playlist
                   </Button>
                   <h4>Playlist Name</h4>
                   <input id="name"></input>
-                <ul className="playlist-preview-list">
-                </ul>
+                  <ul className="playlist-preview-list"></ul>
+                </div>
               </div>
             </div>
-              </div>
 
-           
-
-
-            <div className="savePlaylist">
-                <h3>History of Changes </h3>
-
-                <ul className="history-list">
-                  {this.state.history.map(function (change, i) {
-                    return (
-                      <li className="song">
-                        <h3>{change.name}</h3>
-                        <Button
-                          className="song-chip"
-                          onClick={() => this.revertChange(change.snapshot, i)}
-                          style={{ backgroundColor: "red" }}
-                        >
-                          Revert Change
-                        </Button>
-                      </li>
-                    );
-                  }, this)}
-                  </ul>
-                  </div>
+            <div className="history">
+              <h3>History of Changes </h3>
+              <ul className="history-list">
+                {this.state.history.map(function (change, i) {
+                  return (
+                    <li className="song">
+                      <h3>{change.name}</h3>
+                      <Button
+                        className="song-chip"
+                        onClick={() => this.revertChange(change.snapshot, i)}
+                        style={{ backgroundColor: "red" }}
+                      >
+                        Revert Change
+                      </Button>
+                    </li>
+                  );
+                }, this)}
+              </ul>
+            </div>
 
             <SpotifyPlayer
               token={this.state.token}
