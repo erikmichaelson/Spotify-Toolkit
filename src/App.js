@@ -11,6 +11,7 @@ import Venn from "./Venn.js";
 import SearchField from "react-search-field";
 import ReactTooltip from "react-tooltip";
 import "./App.css";
+import TextField from 'material-ui/TextField';
 import { axisRight } from "d3";
 
 //much of this code is inspired by Joel Karlsson's "How to Build A Spotify Player with React in 15 Minutes"
@@ -21,9 +22,10 @@ class App extends Component {
     this.state = {
       token: null,
       uris: [],
-      yourPlaylists: [],
+      unselectedPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
+
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
       songSet: [],
@@ -42,6 +44,9 @@ class App extends Component {
     //  this.removeSongs = this.removeSongs.bind(this);
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
+
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.saveClick = this.saveClick.bind(this);
   }
 
   componentDidMount() {
@@ -85,7 +90,7 @@ class App extends Component {
           });
         });
         this.setState({
-          yourPlaylists: playlistNames,
+          unselectedPlaylists: playlistNames,
         });
       },
     });
@@ -173,17 +178,26 @@ class App extends Component {
   }
 
   removeSelectedPlaylist(playlist, i) {
+    //add to history and add snapshot of previous
     this.setState((prevState, props) => {
-      prevState.selectedPlaylists.splice(i, 1);
-      prevState.yourPlaylists.push(playlist);
-    });
+      //remove rfrom selected playlists
+      var placeHolderSelected = prevState.selectedPlaylists;
+      placeHolderSelected.splice(i, 1);
 
-    //add songs to the song set
-    this.setState((prevState, props) => {
+      //add to selected playlists
+      var placeHolderUnselectedPlaylists = prevState.unselectedPlaylists;
+      placeHolderUnselectedPlaylists.push(playlist);
+
+      //remove songs
       var newSongSet = prevState.songSet.filter((song) => {
         return song.playListID != playlist.id;
       });
-      return { songSet: newSongSet };
+
+      return {
+        selectedPlaylists: placeHolderSelected,
+        unselectedPlaylists: placeHolderUnselectedPlaylists,
+        songSet: newSongSet,
+      };
     });
 
     this.forceUpdate();
@@ -191,8 +205,6 @@ class App extends Component {
 
   addSelectedPlaylist(playlist, i) {
     var selectedPlaylist = playlist;
-    console.log("check");
-    console.log(playlist);
 
     var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
     $.ajax({
@@ -206,20 +218,33 @@ class App extends Component {
           return;
         }
 
+
         selectedPlaylist.trackList = data.items;
-        this.setState((prevState, props) => {
-          prevState.selectedPlaylists.push(selectedPlaylist);
-          prevState.yourPlaylists.splice(i, 1);
+
+        //add to  selected playlists
+        var placeHolderSelected = this.state.selectedPlaylists;
+        placeHolderSelected.push(selectedPlaylist);
+
+        //take out from unselectd playlists playlists
+        var placeHolderUnselectedPlaylists = this.state.unselectedPlaylists;
+        placeHolderUnselectedPlaylists.splice(i, 1);
+
+        //add new songs
+        var newSongSet = this.state.songSet;
+
+        data.items.forEach((song) => {
+          song.playListID = playlist.id;
+          newSongSet.push(song);
         });
 
-        //add songs to the song set
         this.setState((prevState, props) => {
-          var newSongSet = prevState.songSet;
-          playlist.trackList.forEach((song) => {
-            song.playListID = playlist.id;
-            newSongSet.push(song);
-          });
-          return { songSet: newSongSet };
+          // selectedPlaylist.trackList = data.items;
+
+          return {
+            selectedPlaylists: placeHolderSelected,
+            unselectedPlaylists: placeHolderUnselectedPlaylists,
+            songSet: newSongSet,
+          };
         });
 
         this.forceUpdate();
@@ -262,7 +287,7 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      prevState.yourPlaylists.push(playlist);
+      prevState.unselectedPLaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
@@ -296,6 +321,75 @@ class App extends Component {
     this.setState({
       uris: [song.track.uri, song.track.artists[0].uri, song.track.album.uri],
     });
+  }
+
+  savePlaylist(name) {
+    var sharing = true;
+    var collab = false;
+
+    // I need to update permissions for the website
+    $.ajax({
+      url: "https://api.spotify.com/v1/me/playlists",
+      type: "POST",
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+      },
+      data: name + sharing + collab,
+      success: () => {
+        this.forceUpdate();
+      },
+    });
+  }
+
+  saveClick() {
+    var name = prompt("Name your new playlist");
+    this.savePlaylist(name);
+  }
+
+  filterExplicit() {
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter(s => !s.track.explicit)
+      return { songSet: newSongSet };
+    });
+
+    this.forceUpdate();
+  }
+
+  filterArtist(artist) {
+    this.setState((prevState, props) => {
+      console.log("HELLO")
+      console.log(prevState.songSet[0].track.artists[0])
+      var newSongSet = prevState.songSet.filter(s => (s.track.artists[0]!=artist))
+      return { songSet: newSongSet };
+    });
+
+    this.forceUpdate();
+  }
+
+  filterAge(min, max) {
+      //var min = document.getElementById(ageMin).value;
+      //var max = document.getElementById(ageMax).value;
+
+      this.setState((prevState, props) => {
+        var newSongSet = prevState.songSet.filter(s => 
+          (s.track.album.release_date.substring(0,4) < min || s.track.album.release_date.substring(0,4) > max));
+        return { songSet: newSongSet };
+      });
+      this.forceUpdate();
+  }
+
+  filterAdded(songs, min, max) {
+    //var min = document.getElementById(addedMin).value;
+    //var max = document.getElementById(addedMax).value;
+
+    this.state.songSet.forEach(s => {
+      var rYear = s.track.album.release_date.substring(0,4);
+          if(rYear < min || rYear > max){
+              songs.remove(s);
+          }
+      });
+
+      this.forceUpdate();
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -408,7 +502,7 @@ class App extends Component {
                   }, this)}
                 </ul>
                 <ul class="playlist-select-list">
-                  {this.state.yourPlaylists.map(function (playlist, i) {
+                  {this.state.unselectedPlaylists.map(function (playlist, i) {
                     const creator = "Creator : " + playlist.owner;
                     const songs = "Playlist Length " + playlist.tracks.total;
                     const test = creator + "\n" + songs + " songs";
@@ -474,7 +568,8 @@ class App extends Component {
                       const Title = song.track.name;
                       return (
                         <li className="song">
-                          <Button className="song-chip"
+                          <Button
+                            className="song-chip"
                             onClick={() => this.playSongs(song)}
                             style={{ backgroundColor: "#1DB954" }}
                           >
@@ -517,14 +612,49 @@ class App extends Component {
               </div>
 
               <div className="filters">
-                <h3>Filters </h3>
+                <h3>Edit Your Created Playlist </h3>
 
-                <ul className="playlist-preview-list"></ul>
+                <h3>Filters </h3>
+                <ul className="playlist-preview-list">
+                  <li>
+                    Remove Explicits
+                    <input type="submit" value="apply" onClick={()=>this.filterExplicit()}></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input id="ageMin" value="YYYY"></input>
+                    <input onChange={value => this.filterAdded(value)} />
+                    to
+                    <input id="ageMax" value="YYYY"></input>
+                    <input type="submit" value="Apply"></input>
+                  </li>
+                  <li>
+                    Year Released<br></br>
+                    <input id="addedMin" value="YYYY"></input>
+                    to
+                    <input id="addedMax" value="YYYY"></input>
+                    <input type="submit" value="Apply"></input>
+                  </li>
+                  <li>
+                    Remove Artist
+                    <TextField
+                      
+                    />
+                    <input onEnter={artist =>this.filterArtist(artist)} />
+                  </li>
+                </ul>
               </div>
 
               <div className="savePlaylist">
                 <h3>Playlist Options </h3>
-
+                <Button
+                  style={{ backgroundColor: "#1DB954" }}
+                  onClick={() => this.savePlaylist("hello")}
+                >
+                  Save Song Set as Playlist
+                </Button>
+                <h4>Playlist Name</h4>
+                <input id="name"></input>
                 <ul className="playlist-preview-list"></ul>
               </div>
             </div>
