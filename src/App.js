@@ -265,7 +265,7 @@ class App extends Component {
 
   addToPool(playlist) {
     this.setState((prevState, props) => {
-      prevState.unselectedPLaylists.push(playlist);
+      prevState.unselectedPlaylists.push(playlist);
       prevState.searchedPlaylists.splice(0, prevState.searchedPlaylists.length);
     });
 
@@ -419,7 +419,7 @@ class App extends Component {
       });   */
     this.setState((prevState, props) => {
       console.log(year) //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter(s => 
+      var newSongSet = prevState.songSet.filter(s =>
         (s.track.album.release_date.substring(0,4) == year));
       return { songSet: newSongSet };
     });
@@ -666,7 +666,7 @@ class App extends Component {
                       type="number"
                       placeholder="2016"
                       className="date"
-                      value={this.state.textFieldValue} 
+                      value={this.state.textFieldValue}
                       //onChange={()=>this.filterAdded(this.value)}
                     />
                    <input type="submit" value="apply" onClick={()=>this.filterAdded()}></input>
