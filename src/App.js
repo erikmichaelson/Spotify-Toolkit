@@ -25,7 +25,7 @@ class App extends Component {
       unselectedPlaylists: [],
       selectedPlaylists: [],
       previewedPlaylist: [],
-
+      playlistName: "",
       selectedPreviewedPlaylist: "",
       searchedPlaylists: [],
       songSet: [],
@@ -44,7 +44,10 @@ class App extends Component {
     this.playSongs = this.playSongs.bind(this);
 
     this.savePlaylist = this.savePlaylist.bind(this);
-    this.saveClick = this.saveClick.bind(this);
+
+    this.handlePlaylistNameOnChange = this.handlePlaylistNameOnChange.bind(
+      this
+    );
   }
 
   componentDidMount() {
@@ -229,7 +232,6 @@ class App extends Component {
   }
 
   search(value) {
- 
     var searchCleaned = value.replace(" ", "%20") + "&type=playlist";
     $.ajax({
       url: "https://api.spotify.com/v1/search?q=" + searchCleaned,
@@ -299,27 +301,73 @@ class App extends Component {
     });
   }
 
-  savePlaylist(name) {
-    var sharing = true;
-    var collab = false;
+  savePlaylist() {
+    if (this.state.playlistName == "") {
+      alert("Please Enter A Name for Your Playlist");
+      return;
+    } else {
+      var sharing = true;
+      var collab = false;
 
-    // I need to update permissions for the website
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/playlists",
-      type: "POST",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
-      },
-      data: name + sharing + collab,
-      success: () => {
+      if (
+        window.confirm(
+          "Are you sure you want to create " +
+            this.state.playlistName +
+            " playlist"
+        )
+      ) {
+        // I need to update permissions for the website
+        $.ajax({
+          url: "https://api.spotify.com/v1/me/playlists",
+          type: "POST",
+          beforeSend: (xhr) => {
+            xhr.setRequestHeader(
+              "Authorization",
+              "Bearer " + hash.access_token
+            );
+          },
+          data: JSON.stringify({
+            name: this.state.playlistName,
+            public: "true",
+          }),
+          dataType: "json",
+          success: (data) => {
+            console.log("in data");
+            console.log(data);
+            console.log(this.state.songSet);
+
+            var uris = [];
+            this.state.songSet.forEach((song) => {
+              uris.push(song.track.uri);
+            });
+
+            //add songs to the playlist
+            $.ajax({
+              url:
+                "https://api.spotify.com/v1/me/playlists/" +
+                data.id +
+                "/tracks",
+              type: "POST",
+              beforeSend: (xhr) => {
+                xhr.setRequestHeader(
+                  "Authorization",
+                  "Bearer " + hash.access_token
+                );
+              },
+              data: JSON.stringify({
+                uris: uris,
+              }),
+              dataType: "json",
+              success: (data) => {
+                console.log("in data");
+              },
+            });
+          },
+        });
+
         this.forceUpdate();
-      },
-    });
-  }
-
-  saveClick() {
-    var name = prompt("Name your new playlist");
-    this.savePlaylist(name);
+      }
+    }
   }
 
   filterExplicit() {
@@ -333,7 +381,6 @@ class App extends Component {
 
   filterArtist(artist) {
     this.setState((prevState, props) => {
-      console.log("HELLO");
       console.log(prevState.songSet[0].track.artists[0]);
       var newSongSet = prevState.songSet.filter(
         (s) => s.track.artists[0] != artist
@@ -371,6 +418,12 @@ class App extends Component {
     });
 
     this.forceUpdate();
+  }
+
+  handlePlaylistNameOnChange(event) {
+    this.setState({
+      playlistName: event.target.value,
+    });
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -629,15 +682,22 @@ class App extends Component {
               </div>
 
               <div className="savePlaylist">
-                <h3>Playlist Options </h3>
+                <h3> Create Playlist</h3>
+                <h4>Playlist Name</h4>
+                <div id="playlist-name">
+                  <TextField
+                    value={this.state.playlistName}
+                    style={{ backgroundColor: "white" }}
+                    label="Required"
+                    onChange={this.handlePlaylistNameOnChange}
+                  ></TextField>
+                </div>
                 <Button
                   style={{ backgroundColor: "#1DB954" }}
-                  onClick={() => this.savePlaylist("hello")}
+                  onClick={() => this.savePlaylist()}
                 >
                   Save Song Set as Playlist
                 </Button>
-                <h4>Playlist Name</h4>
-                <input id="name"></input>
                 <ul className="playlist-preview-list"></ul>
               </div>
             </div>

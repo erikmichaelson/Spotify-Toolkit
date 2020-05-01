@@ -101,6 +101,11 @@ h1, h2, h3, h4 {
 
 }
 
+#playlist-name{
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
 
 .playlist-select-list{
   margin-left: 0;
