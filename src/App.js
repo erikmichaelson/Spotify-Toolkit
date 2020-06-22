@@ -7,7 +7,8 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import hash from "./hash";
-import Venn from "./Venn.js";
+import Venn from "./components/Venn.js";
+import FilterForm from "./components/Filters.js";
 import SearchField from "react-search-field";
 import ReactTooltip from "react-tooltip";
 import "./App.css";
@@ -699,8 +700,11 @@ class App extends Component {
               </div>
 
               <div className="filters">
-                <h3>Edit Your Created Playlist </h3>
+                <FilterForm songSet={this.state.songSet}
+                    setSuperState={this.setState}
+                  />
 
+                  {/*
                 <h3>Filters </h3>
                 <ul className="playlist-preview-list">
                   <li className="filter-object">
@@ -773,6 +777,7 @@ class App extends Component {
                     </div>
                   </li>
                 </ul>
+                */}
               </div>
 
               <div className="savePlaylist">
