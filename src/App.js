@@ -7,8 +7,12 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import hash from "./hash";
+
 import Venn from "./components/Venn.js";
 import FilterForm from "./components/Filters.js";
+import PlaylistSaver from "./components/PlaylistSaver.js";
+import PlaylistPreview from "./components/Preview.js";
+
 import SearchField from "react-search-field";
 import ReactTooltip from "react-tooltip";
 import "./App.css";
@@ -47,8 +51,6 @@ class App extends Component {
     //  this.removeSongs = this.removeSongs.bind(this);
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
-
-    this.savePlaylist = this.savePlaylist.bind(this);
 
     this.handleArtistChange = this.handleArtistChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -305,90 +307,6 @@ class App extends Component {
     this.setState({
       uris: [song.track.uri, song.track.artists[0].uri, song.track.album.uri],
     });
-  }
-
-  savePlaylist() {
-    if (this.state.playlistName == "" || this.state.songSet.length == 0) {
-      alert(
-        "Please Enter A Name for Your Playlist Or Add Songs To Your Playlist"
-      );
-      return;
-    } else {
-      var sharing = true;
-      var collab = false;
-
-      if (
-        window.confirm(
-          "Are you sure you want to create " +
-            this.state.playlistName +
-            " playlist"
-        )
-      ) {
-        // I need to update permissions for the website
-        $.ajax({
-          url: "https://api.spotify.com/v1/me/playlists",
-          type: "POST",
-          beforeSend: (xhr) => {
-            xhr.setRequestHeader(
-              "Authorization",
-              "Bearer " + hash.access_token
-            );
-          },
-          data: JSON.stringify({
-            name: this.state.playlistName,
-            public: "true",
-          }),
-          dataType: "json",
-          success: (data) => {
-            console.log(this.state.playlistNames)
-            var uris = [];
-            this.state.songSet.forEach((song) => {
-              uris.push(song.track.uri);
-            });
-
-            var url = data.href + "/tracks?uris=";
-
-            for (var i = 0; i < uris.length; i++) {
-              url = url + uris[i] + ",";
-            }
-
-            //add songs to the playlist
-            $.ajax({
-              url: url,
-              type: "POST",
-              beforeSend: (xhr) => {
-                xhr.setRequestHeader(
-                  "Authorization",
-                  "Bearer " + hash.access_token
-                );
-              },
-              data: JSON.stringify({
-                uris: uris,
-              }),
-              dataType: "json",
-              success: (data) => {
-                alert(this.state.playlistName + " was created successfully");
-                this.setState({
-                  token: null,
-                  uris: [],
-                  unselectedPlaylists: [],
-                  selectedPlaylists: [],
-                  previewedPlaylist: [],
-                  playlistName: "",
-                  selectedPreviewedPlaylist: "",
-                  searchedPlaylists: [],
-                  songSet: [],
-                });
-
-                this.componentDidMount();
-              },
-            });
-          },
-        });
-
-        this.forceUpdate();
-      }
-    }
   }
 
   filterExplicit() {
@@ -678,126 +596,19 @@ class App extends Component {
               </div>
 
               <div className="playlistPreview">
-                <h3>Playlist Preview </h3>
-                <h4> {this.state.selectedPreviewedPlaylist} </h4>
-                <ul className="playlist-preview-list">
-                  {this.state.previewedPlaylist.map(function (song, i) {
-                    const Artist = song.track.artists[0].name;
-                    const Title = song.track.name;
-
-                    return (
-                      <li className="song">
-                        <Chip
-                          className="song-chip"
-                          label={Title}
-                          style={{ backgroundColor: "#1DB954" }}
-                        />
-                        <Chip className="song-chip" label={Artist} />
-                      </li>
-                    );
-                  }, this)}
-                </ul>
+                    <PlaylistPreview toPreview={this.state.previewedPlaylist}/>
               </div>
 
               <div className="filters">
                 <FilterForm songSet={this.state.songSet}
                     setSuperState={this.setState}
                   />
-
-                  {/*
-                <h3>Filters </h3>
-                <ul className="playlist-preview-list">
-                  <li className="filter-object">
-                    Remove Explicits
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterExplicit()}
-                      ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Year Added<br></br>
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2016"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleDateChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterAdded()}
-                      ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Year Released<br></br>
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2016"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleMinChange}
-                    />
-                    to
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2017"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleMaxChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterAge()}
-                      ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Remove Artist
-                    <TextField
-                      className="date"
-                      onChange={this.handleArtistChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterArtist()}
-                      ></input>
-                    </div>
-                  </li>
-                </ul>
-                */}
               </div>
 
               <div className="savePlaylist">
-                <h3> Create Playlist</h3>
-                <h4>Playlist Name</h4>
-                <div id="playlist-name">
-                  <TextField
-                    value={this.state.playlistName}
-                    style={{ backgroundColor: "white" }}
-                    label="Required"
-                    onChange={this.handlePlaylistNameOnChange}
-                  ></TextField>
-                </div>
-                <Button
-                  style={{ backgroundColor: "#1DB954" }}
-                  onClick={() => this.savePlaylist()}
-                >
-                  Save Song Set as Playlist
-                </Button>
-                <ul className="playlist-preview-list"></ul>
+                <PlaylistSaver
+                  songSet={this.state.songSet}
+                />
               </div>
             </div>
 
