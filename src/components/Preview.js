@@ -6,16 +6,13 @@ import Chip from "@material-ui/core/Chip";
 class PlaylistPreview extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-
-		}
 	}
 
 	render() {
 		return (
 			<div className="preview">
 				<h3>Playlist Preview </h3>
-				<h4> {this.props.toPreview.name} </h4>
+				<h4> {this.props.toPreviewName} </h4>
 				<ul className="playlist-preview-list">
 					{this.props.toPreview.map(function (song, i) {
 					const Artist = song.track.artists[0].name;

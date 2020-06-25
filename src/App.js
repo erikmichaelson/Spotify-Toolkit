@@ -12,9 +12,8 @@ import Venn from "./components/Venn.js";
 import FilterForm from "./components/Filters.js";
 import PlaylistSaver from "./components/PlaylistSaver.js";
 import PlaylistPreview from "./components/Preview.js";
+import PlaylistViewer from "./components/Playlists.js";
 
-import SearchField from "react-search-field";
-import ReactTooltip from "react-tooltip";
 import "./App.css";
 import TextField from "@material-ui/core/TextField";
 import { axisRight } from "d3";
@@ -25,6 +24,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
+      songSet: [],
+
       token: null,
       uris: [],
       unselectedPlaylists: [],
@@ -36,8 +37,8 @@ class App extends Component {
       minDate: "",
       maxDate: "",
       selectedPreviewedPlaylist: "",
-      searchedPlaylists: [],
-      songSet: [],
+//      searchedPlaylists: [],
+//      songSet: [],
     };
 
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
@@ -52,14 +53,7 @@ class App extends Component {
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
 
-    this.handleArtistChange = this.handleArtistChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.handleMinChange = this.handleMinChange.bind(this);
-    this.handleMaxChange = this.handleMaxChange.bind(this);
-
-    this.handlePlaylistNameOnChange = this.handlePlaylistNameOnChange.bind(
-      this
-    );
+    this.reset = this.reset.bind(this);
   }
 
   componentDidMount() {
@@ -72,41 +66,7 @@ class App extends Component {
         token: _token,
       });
       this.getCurrentlyPlaying(_token);
-      this.getUserPlaylists(_token);
     }
-  }
-
-  // this method gets the current playlists and puts them in state's
-  // playlist variable
-  getUserPlaylists(token) {
-    $.ajax({
-      url: "https://api.spotify.com/v1/me/playlists",
-      type: "GET",
-      beforeSend: (xhr) => {
-        xhr.setRequestHeader("Authorization", "Bearer " + token);
-      },
-      success: (data) => {
-        //console.log(data);
-
-        if (!data) {
-          return;
-        }
-        var playlistNames = [];
-        data.items.forEach((playlist) => {
-          //console.log(playlist);
-          playlistNames.push({
-            name: playlist.name,
-            owner: playlist.owner.id,
-            tracks: playlist.tracks,
-            id: playlist.id,
-            uri: playlist.uri,
-          });
-        });
-        this.setState({
-          unselectedPlaylists: playlistNames,
-        });
-      },
-    });
   }
 
   getCurrentlyPlaying(token) {
@@ -367,6 +327,22 @@ class App extends Component {
     this.forceUpdate();
   }
 
+  reset(){
+    this.setState({
+      token: null,
+      uris: [],
+      unselectedPlaylists: [],
+      selectedPlaylists: [],
+      previewedPlaylist: [],
+      playlistName: "",
+      selectedPreviewedPlaylist: "",
+      searchedPlaylists: [],
+      songSet: [],
+    });
+    this.componentDidMount();
+    this.forceUpdate();
+  }
+
   filterLength() {}
 
   handlePlaylistNameOnChange(event) {
@@ -423,6 +399,10 @@ class App extends Component {
           <div>
             <div className="grid-container">
               <div className="selectedPlaylists">
+                <PlaylistViewer
+                  TODO
+                  />
+                {/*
                 <h3>Playlists </h3>
                 <div>
                   <SearchField
@@ -467,7 +447,6 @@ class App extends Component {
                         />
                         <Chip label={creator} />
                         <Chip label={songs} />
-                        */}
                         <a
                           data-for={playlist.name}
                           data-tip={test}
@@ -556,6 +535,7 @@ class App extends Component {
                     );
                   }, this)}
                 </ul>
+            */}
               </div>
 
               <div className="venn" id="venn">
@@ -596,7 +576,9 @@ class App extends Component {
               </div>
 
               <div className="playlistPreview">
-                    <PlaylistPreview toPreview={this.state.previewedPlaylist}/>
+                    <PlaylistPreview 
+                      toPreview={this.state.previewedPlaylist}
+                      toPreviewName={this.state.selectedPreviewedPlaylist}/>
               </div>
 
               <div className="filters">
@@ -608,8 +590,10 @@ class App extends Component {
               <div className="savePlaylist">
                 <PlaylistSaver
                   songSet={this.state.songSet}
+                  reset={this.reset}
                 />
               </div>
+
             </div>
 
             <SpotifyPlayer
