@@ -20,6 +20,11 @@ class FilterForm extends React.Component {
     this.handleMaxChange = this.handleMaxChange.bind(this);
   }
 
+  testBoolean(song) {
+    console.log("Test Boolean called")
+    return true;
+  }
+
   filterExplicit() {
     const props = this.props;
     console.log(props);
@@ -124,7 +129,7 @@ class FilterForm extends React.Component {
                       <input
                         type="submit"
                         value="Apply"
-                        onClick={() => this.filterExplicit()}
+                        onClick={() => this.props.filter(this.testBoolean)}
                       ></input>
                     </div>
                   </li>

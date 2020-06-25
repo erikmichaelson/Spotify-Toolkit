@@ -53,6 +53,7 @@ class App extends Component {
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
 
+    this.filter = this.filter.bind(this);
     this.reset = this.reset.bind(this);
   }
 
@@ -343,36 +344,19 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filterLength() {}
-
-  handlePlaylistNameOnChange(event) {
-    this.setState({
-      playlistName: event.target.value,
-    });
+  filter(rule) {
+    console.log(this.state.songSet)
+    this.state.songSet.forEach((song) => {
+      if(!rule(song))
+        this.state.songSet.remove(song);
+    })
+    console.log(this.state.songSet)
   }
 
-  handleMinChange(event) {
-    this.setState({
-      minDate: event.target.value,
-    });
-  }
-
-  handleMaxChange(event) {
-    this.setState({
-      maxDate: event.target.value,
-    });
-  }
-
-  handleArtistChange(event) {
-    this.setState({
-      filteredArtist: event.target.value,
-    });
-  }
-
-  handleDateChange(event) {
-    this.setState({
-      filteredDate: event.target.value,
-    });
+  swap(s1_index, s2_index) {
+    let temp = this.state.songSet[s1_index];
+    this.state.songSet[s1_index] = this.state.songSet[s2_index];
+    this.state.songSet[s2_index] = temp;
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -398,7 +382,7 @@ class App extends Component {
         {this.state.token && (
           <div>
             <div className="grid-container">
-              <div className="selectedPlaylists">
+              <div>
                 <PlaylistViewer
                   TODO
                   />
@@ -584,6 +568,7 @@ class App extends Component {
               <div className="filters">
                 <FilterForm songSet={this.state.songSet}
                     setSuperState={this.setState}
+                    filter={this.filter}
                   />
               </div>
 
