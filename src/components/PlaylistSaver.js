@@ -87,19 +87,7 @@ class PlaylistSaver extends React.Component {
               dataType: "json",
               success: (data) => {
                 alert(this.state.playlistName + " was created successfully");
-                this.setState({
-                  token: null,
-                  uris: [],
-                  unselectedPlaylists: [],
-                  selectedPlaylists: [],
-                  previewedPlaylist: [],
-                  playlistName: "",
-                  selectedPreviewedPlaylist: "",
-                  searchedPlaylists: [],
-                  songSet: [],
-                });
-
-                this.componentDidMount();
+                this.props.reset();
               },
             });
           },
