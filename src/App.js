@@ -32,13 +32,8 @@ class App extends Component {
       selectedPlaylists: [],
       previewedPlaylist: [],
       playlistName: "",
-      filteredArtist: "",
-      filteredDate: "",
-      minDate: "",
-      maxDate: "",
       selectedPreviewedPlaylist: "",
-//      searchedPlaylists: [],
-//      songSet: [],
+
     };
 
     this.getCurrentlyPlaying = this.getCurrentlyPlaying.bind(this);
@@ -53,7 +48,8 @@ class App extends Component {
     // this.replaceSongs = this.replaceSongs.bind(this);
     this.playSongs = this.playSongs.bind(this);
 
-    this.filter = this.filter.bind(this);
+    this.addSongs = this.addSongs.bind(this);
+    this.filterSongSet = this.filterSongSet.bind(this);
     this.reset = this.reset.bind(this);
   }
 
@@ -149,6 +145,26 @@ class App extends Component {
       return {
         selectedPlaylists: placeHolderSelected,
         unselectedPlaylists: placeHolderUnselectedPlaylists,
+        songSet: newSongSet,
+      };
+    });
+
+    this.forceUpdate();
+  }
+
+  addSongs(songs) {
+    console.log(songs)
+    //add new songs
+    let newSongSet = this.state.songSet;
+
+    songs.forEach((song) => {
+//      song.playListID = playlist.id;
+      newSongSet.push(song);
+    });
+
+    this.setState((prevState, props) => {
+
+      return {
         songSet: newSongSet,
       };
     });
@@ -344,19 +360,21 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  filter(rule) {
+  filterSongSet(rule) {
     console.log(this.state.songSet)
-    this.state.songSet.forEach((song) => {
-      if(!rule(song))
-        this.state.songSet.remove(song);
-    })
+    this.setState((prevState, props) => {
+      var newSongSet = prevState.songSet.filter((s) => !rule(s));
+      return { songSet: newSongSet };
+    });
     console.log(this.state.songSet)
   }
 
   swap(s1_index, s2_index) {
+    console.log(this.state.songSet)
     let temp = this.state.songSet[s1_index];
     this.state.songSet[s1_index] = this.state.songSet[s2_index];
     this.state.songSet[s2_index] = temp;
+    console.log(this.state.songSet)
   }
 
   // inspired by the React Tutorial on facebook's website
@@ -384,7 +402,7 @@ class App extends Component {
             <div className="grid-container">
               <div>
                 <PlaylistViewer
-                  TODO
+                  addSongs = {this.addSongs}
                   />
                 {/*
                 <h3>Playlists </h3>
@@ -568,7 +586,7 @@ class App extends Component {
               <div className="filters">
                 <FilterForm songSet={this.state.songSet}
                     setSuperState={this.setState}
-                    filter={this.filter}
+                    filterSongSet={this.filterSongSet}
                   />
               </div>
 

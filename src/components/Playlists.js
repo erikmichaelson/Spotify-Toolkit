@@ -62,12 +62,12 @@ class PlaylistViewer extends React.Component {
 			});
 		  },
 		});
-	  }
+	}
 
 	addSelectedPlaylist(playlist, i) {
 		var selectedPlaylist = playlist;
 	
-		var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
+		const url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
 		$.ajax({
 		  url: url,
 		  type: "GET",
@@ -82,28 +82,20 @@ class PlaylistViewer extends React.Component {
 			selectedPlaylist.trackList = data.items;
 	
 			//add to  selected playlists
-			var placeHolderSelected = this.state.selectedPlaylists;
+			let placeHolderSelected = this.state.selectedPlaylists;
 			placeHolderSelected.push(selectedPlaylist);
 	
 			//take out from unselectd playlists playlists
-			var placeHolderUnselectedPlaylists = this.state.unselectedPlaylists;
+			let placeHolderUnselectedPlaylists = this.state.unselectedPlaylists;
 			placeHolderUnselectedPlaylists.splice(i, 1);
 	
-			//add new songs
-			var newSongSet = this.state.songSet;
-	
-			data.items.forEach((song) => {
-			  song.playListID = playlist.id;
-			  newSongSet.push(song);
-			});
-	
+			this.props.addSongs(selectedPlaylist.trackList);
+			
 			this.setState((prevState, props) => {
-			  // selectedPlaylist.trackList = data.items;
 	
 			  return {
 				selectedPlaylists: placeHolderSelected,
 				unselectedPlaylists: placeHolderUnselectedPlaylists,
-				songSet: newSongSet,
 			  };
 			});
 	

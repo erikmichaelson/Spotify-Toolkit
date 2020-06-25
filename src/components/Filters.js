@@ -25,15 +25,9 @@ class FilterForm extends React.Component {
     return true;
   }
 
-  filterExplicit() {
-    const props = this.props;
-    console.log(props);
-    this.props.setSuperState((prevState, props) => {
-      var newSongSet = this.props.songSet.filter((s) => !s.track.explicit);
-      return { songSet: newSongSet };
-    });
-
-    super.forceUpdate();
+  isExplicit(song) {
+    console.log("Explicit Boolean called")
+    return song.track.explicit;
   }
 
   filterArtist() {
@@ -129,7 +123,7 @@ class FilterForm extends React.Component {
                       <input
                         type="submit"
                         value="Apply"
-                        onClick={() => this.props.filter(this.testBoolean)}
+                        onClick={() => this.props.filterSongSet((song) => this.isExplicit(song))}
                       ></input>
                     </div>
                   </li>
