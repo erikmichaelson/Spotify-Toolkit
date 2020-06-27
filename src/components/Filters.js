@@ -7,76 +7,54 @@ class FilterForm extends React.Component {
 		super(props);
 		this.state = {
 			  filteredArtist: "",
-			  filteredDate: "",
 			  minDate: "",
-			  maxDate: "",
+        maxDate: "",
+        minAdded: "",
+        maxAdded: "",
     }
     
-    this.setSuperState = this.props.setSuperState.bind(props.this);
-
     this.handleArtistChange = this.handleArtistChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
+    this.handleMinAddedChange = this.handleMinAddedChange.bind(this);
+    this.handleMaxAddedChange = this.handleMaxAddedChange.bind(this);
     this.handleMinChange = this.handleMinChange.bind(this);
     this.handleMaxChange = this.handleMaxChange.bind(this);
   }
 
-  testBoolean(song) {
-    console.log("Test Boolean called")
-    return true;
+  notExplicit(song) {
+    return !song.track.explicit;
   }
 
-  isExplicit(song) {
-    console.log("Explicit Boolean called")
-    return song.track.explicit;
+  removeArtist(song, artist) {
+    return song.track.artists[0].name === artist;
   }
 
-  filterArtist() {
-    var filteredName = this.state.filteredArtist;
-    this.setState((prevState, props) => {
-      console.log(prevState.songSet[0].track.artists[0]);
-      var newSongSet = prevState.songSet.filter(
-        (s) =>
-          s.track.artists[0].name.toLowerCase() != filteredName.toLowerCase()
-      );
-      return { songSet: newSongSet };
-    });
+  betweenYears(song, start, end) {
+    if(song.track.album.release_date != null){
+      const relYear = song.track.album.release_date.substring(0, 4);
+      console.log(start, end)
+      console.log(relYear)
+      console.log(start <= relYear)
+      console.log(song.track.album.release_date.substring(0, 4) <= end)
 
-    this.forceUpdate();
+      return (start <= relYear && relYear <= end);
+    } else 
+      return false;
   }
 
-  filterAge(min, max) {
-    var min = this.state.minDate;
-    var max = this.state.maxDate;
-
-    this.setState((prevState, props) => {
-      var newSongSet = prevState.songSet.filter(
-        (s) =>
-          s.track.album.release_date.substring(0, 4) < min ||
-          s.track.album.release_date.substring(0, 4) > max
-      );
-      return { songSet: newSongSet };
-    });
-    this.forceUpdate();
+  removeArtist(song, artist) {
+    return song.track.artists[0].name !== artist;
   }
 
-  filterAdded() {
-    var year = this.state.filteredDate;
-    /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
-    this.setState((prevState, props) => {
-      console.log(year); //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter((s) => {
-        return parseInt(s.added_at.substring(0, 4)) >= parseInt(year);
-      });
+  addedBetween(song, start, end) {
+    console.log(start, end)
+    if(song.track.album.release_date != null){
+      const addYear = parseInt(song.added_at.substring(0, 4))
+      console.log(addYear)
+      console.log((addYear >= start && addYear <= end))
 
-      return { songSet: newSongSet };
-    });
-
-    this.forceUpdate();
+      return (addYear >= start && addYear <= end);
+    } else 
+      return false;
   }
 
   filterLength() {}
@@ -99,96 +77,111 @@ class FilterForm extends React.Component {
     });
   }
 
+  handleMinAddedChange(event) {
+    this.setState({
+      minAdded: event.target.value,
+    });
+  }
+
+  handleMaxAddedChange(event) {
+    this.setState({
+      maxAdded: event.target.value,
+    });
+  }
+
   handleArtistChange(event) {
     this.setState({
       filteredArtist: event.target.value,
     });
   }
-
-  handleDateChange(event) {
-    this.setState({
-      filteredDate: event.target.value,
-    });
-  }
 	
-    render() { 
-      return (<div className="filters">
-                <h3>Edit Your Created Playlist </h3>
+  render() { 
+    return (<div className="filters">
+              <h3>Edit Your Created Playlist </h3>
 
-                <h3>Filters </h3>
-                <ul className="playlist-preview-list">
-                  <li className="filter-object">
-                    Remove Explicits
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.props.filterSongSet((song) => this.isExplicit(song))}
+              <h3>Filters </h3>
+              <ul className="playlist-preview-list">
+                <li className="filter-object">
+                  Remove Explicits
+                  <div className="apply-button">
+                    <input
+                      type="submit"
+                      value="Apply"
+                      onClick={() => this.props.filterSongSet((song) => this.notExplicit(song))}
+                    ></input>
+                  </div>
+                </li>
+                <li className="filter-object">
+                  Year Added<br></br>
+                  <TextField
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="ex: 2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinAddedChange}
+                  />
+                  to
+                  <TextField
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="ex: 2017"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxAddedChange}
+                  />
+                  <div className="apply-button">
+                    <input
+                      type="submit"
+                      value="Apply"
+                      onClick={() => this.props.filterSongSet((song) => this.addedBetween(song, this.state.minAdded, this.state.maxAdded))}
+                    ></input>
+                  </div>
+                </li>
+                <li className="filter-object">
+                  Year Released<br></br>
+                  <TextField
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="ex: 2016"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMinChange}
+                  />
+                  to
+                  <TextField
+                    ref="yearAdded"
+                    type="number"
+                    placeholder="ex: 2017"
+                    className="date"
+                    value={this.state.textFieldValue}
+                    onChange={this.handleMaxChange}
+                  />
+                  <div className="apply-button">
+                    <input
+                      type="submit"
+                      value="Apply"
+                      onClick={() => this.props.filterSongSet((song) => this.betweenYears(song, this.state.minDate, this.state.maxDate))}
+                    ></input>
+                  </div>
+                </li>
+                <li className="filter-object">
+                  Remove Artist
+                  <TextField
+                    className="date"
+                    onChange={this.handleArtistChange}
+                  />
+                  <div className="apply-button">
+                    <input
+                      type="submit"
+                      value="Apply"
+                      onClick={() => this.props.filterSongSet((song) => this.removeArtist(song, this.state.filteredArtist))}
                       ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Year Added<br></br>
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2016"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleDateChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterAdded()}
-                      ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Year Released<br></br>
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2016"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleMinChange}
-                    />
-                    to
-                    <TextField
-                      ref="yearAdded"
-                      type="number"
-                      placeholder="ex: 2017"
-                      className="date"
-                      value={this.state.textFieldValue}
-                      onChange={this.handleMaxChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterAge()}
-                      ></input>
-                    </div>
-                  </li>
-                  <li className="filter-object">
-                    Remove Artist
-                    <TextField
-                      className="date"
-                      onChange={this.handleArtistChange}
-                    />
-                    <div className="apply-button">
-                      <input
-                        type="submit"
-                        value="Apply"
-                        onClick={() => this.filterArtist()}
-                      ></input>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-      )}
+                  </div>
+                </li>
+              </ul>
+            </div>
+    )}
 }
 
 export default FilterForm;

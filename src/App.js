@@ -363,7 +363,7 @@ class App extends Component {
   filterSongSet(rule) {
     console.log(this.state.songSet)
     this.setState((prevState, props) => {
-      var newSongSet = prevState.songSet.filter((s) => !rule(s));
+      var newSongSet = prevState.songSet.filter((s) => rule(s));
       return { songSet: newSongSet };
     });
     console.log(this.state.songSet)
