@@ -107,23 +107,20 @@ class PlaylistViewer extends React.Component {
 	removeSelectedPlaylist(playlist, i) {
 		//add to history and add snapshot of previous
 		this.setState((prevState, props) => {
-		  //remove rfrom selected playlists
+		  //remove from selected playlists
 		  var placeHolderSelected = prevState.selectedPlaylists;
 		  placeHolderSelected.splice(i, 1);
 	
-		  //add to selected playlists
+		  //add to unselected playlists
 		  var placeHolderUnselectedPlaylists = prevState.unselectedPlaylists;
 		  placeHolderUnselectedPlaylists.push(playlist);
 	
 		  //remove songs
-		  var newSongSet = prevState.songSet.filter((song) => {
-			return song.playListID != playlist.id;
-		  });
+			this.props.removeSongs(playlist.getPlaylistTracks());
 	
 		  return {
 			selectedPlaylists: placeHolderSelected,
 			unselectedPlaylists: placeHolderUnselectedPlaylists,
-			songSet: newSongSet,
 		  };
 		});
 	

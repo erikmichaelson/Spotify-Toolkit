@@ -1,31 +1,28 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import TextField from "@material-ui/core/TextField";
+import YearSlider from "./YearSlider.js";
+import Slider from "@material-ui/core/Slider";
+
 
 class FilterForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			  filteredArtist: "",
-			  minDate: "",
-        maxDate: "",
-        minAdded: "",
-        maxAdded: "",
+        relDates: [1950, 2020],
+        addDates: [2006, 2020],
+        lengths: [0, 10],
     }
     
     this.handleArtistChange = this.handleArtistChange.bind(this);
-    this.handleMinAddedChange = this.handleMinAddedChange.bind(this);
-    this.handleMaxAddedChange = this.handleMaxAddedChange.bind(this);
-    this.handleMinChange = this.handleMinChange.bind(this);
-    this.handleMaxChange = this.handleMaxChange.bind(this);
+    this.handleRelChange = this.handleRelChange.bind(this);
+    this.handleAddChange = this.handleAddChange.bind(this);
+    this.handleLenChange = this.handleLenChange.bind(this);
   }
 
   notExplicit(song) {
     return !song.track.explicit;
-  }
-
-  removeArtist(song, artist) {
-    return song.track.artists[0].name === artist;
   }
 
   betweenYears(song, start, end) {
@@ -41,10 +38,6 @@ class FilterForm extends React.Component {
       return false;
   }
 
-  removeArtist(song, artist) {
-    return song.track.artists[0].name !== artist;
-  }
-
   addedBetween(song, start, end) {
     console.log(start, end)
     if(song.track.album.release_date != null){
@@ -52,34 +45,38 @@ class FilterForm extends React.Component {
       console.log(addYear)
       console.log((addYear >= start && addYear <= end))
 
-      return (addYear >= start && addYear <= end);
+      return (start <= addYear && addYear <= end);
     } else 
       return false;
   }
 
-  filterLength() {}
+  removeArtist(song, artist) {
+    return song.track.artists[0].name !== artist;
+  }
 
-  handlePlaylistNameOnChange(event) {
+  filterLength(song, shortest, longest) {
+    // convert to minutes for human intuition
+    let length = (song.track.duration_ms * 0.00001666667);
+    return (shortest <= length && length <= longest);
+  }
+
+  handleLenChange(event, newValues) {
     this.setState({
-      playlistName: event.target.value,
+      lengths: newValues,
     });
   }
 
-  handleMinChange(event) {
+  handleRelChange(event, newValues) {
+    console.log(newValues);
     this.setState({
-      minDate: event.target.value,
+      relDates: newValues,
     });
   }
 
-  handleMaxChange(event) {
+  handleAddChange(event, newValues) {
+    console.log(newValues);
     this.setState({
-      maxDate: event.target.value,
-    });
-  }
-
-  handleMinAddedChange(event) {
-    this.setState({
-      minAdded: event.target.value,
+      addDates: newValues,
     });
   }
 
@@ -97,8 +94,6 @@ class FilterForm extends React.Component {
 	
   render() { 
     return (<div className="filters">
-              <h3>Edit Your Created Playlist </h3>
-
               <h3>Filters </h3>
               <ul className="playlist-preview-list">
                 <li className="filter-object">
@@ -113,55 +108,58 @@ class FilterForm extends React.Component {
                 </li>
                 <li className="filter-object">
                   Year Added<br></br>
-                  <TextField
+                  <Slider
                     ref="yearAdded"
-                    type="number"
-                    placeholder="ex: 2016"
-                    className="date"
-                    value={this.state.textFieldValue}
-                    onChange={this.handleMinAddedChange}
-                  />
-                  to
-                  <TextField
-                    ref="yearAdded"
-                    type="number"
-                    placeholder="ex: 2017"
-                    className="date"
-                    value={this.state.textFieldValue}
-                    onChange={this.handleMaxAddedChange}
+                    min={2006}
+                    max={2020}
+                    value={this.state.addDates}
+                    onChange={this.handleAddChange}
+                    valueLabelDisplay="auto"
                   />
                   <div className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
-                      onClick={() => this.props.filterSongSet((song) => this.addedBetween(song, this.state.minAdded, this.state.maxAdded))}
+                      onClick={() => this.props.filterSongSet((song) => 
+                        this.addedBetween(song, this.state.minAdded, this.state.maxAdded))}
                     ></input>
                   </div>
                 </li>
                 <li className="filter-object">
                   Year Released<br></br>
-                  <TextField
-                    ref="yearAdded"
-                    type="number"
-                    placeholder="ex: 2016"
-                    className="date"
-                    value={this.state.textFieldValue}
-                    onChange={this.handleMinChange}
-                  />
-                  to
-                  <TextField
-                    ref="yearAdded"
-                    type="number"
-                    placeholder="ex: 2017"
-                    className="date"
-                    value={this.state.textFieldValue}
-                    onChange={this.handleMaxChange}
+                  <Slider
+                    ref="yearReleased"
+                    min={1950}
+                    max={2020}
+                    value={this.state.relDates}
+                    onChange={this.handleRelChange}
+                    valueLabelDisplay="auto"
                   />
                   <div className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
-                      onClick={() => this.props.filterSongSet((song) => this.betweenYears(song, this.state.minDate, this.state.maxDate))}
+                      onClick={() => this.props.filterSongSet((song) => 
+                        this.betweenYears(song, this.state.relDates[0], this.state.relDates[1]))}
+                    ></input>
+                  </div>
+                </li>
+                <li className="filter-object">
+                  Song Length<br></br>
+                  <Slider
+                    ref="length_minutes"
+                    min={0}
+                    max={10}
+                    value={this.state.lengths}
+                    onChange={this.handleLenChange}
+                    valueLabelDisplay="auto"
+                  />
+                  <div className="apply-button">
+                    <input
+                      type="submit"
+                      value="Apply"
+                      onClick={() => this.props.filterSongSet((song) => 
+                        this.filterLength(song, this.state.lengths[0], this.state.lengths[1]))}
                     ></input>
                   </div>
                 </li>

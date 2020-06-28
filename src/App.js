@@ -49,6 +49,8 @@ class App extends Component {
     this.playSongs = this.playSongs.bind(this);
 
     this.addSongs = this.addSongs.bind(this);
+    this.removeSongs = this.removeSongs.bind(this);
+
     this.filterSongSet = this.filterSongSet.bind(this);
     this.reset = this.reset.bind(this);
   }
@@ -162,8 +164,25 @@ class App extends Component {
       newSongSet.push(song);
     });
 
-    this.setState((prevState, props) => {
+    this.setState(() => {
+      return {
+        songSet: newSongSet,
+      };
+    });
 
+    this.forceUpdate();
+  }
+
+  removeSongs(songs) {
+    console.log(songs)
+    //add new songs
+    let newSongSet = this.state.songSet;
+
+    songs.forEach((r_song) => {
+      newSongSet.filter((c_song) => (c_song !== r_song))
+    });
+
+    this.setState((prevState, props) => {
       return {
         songSet: newSongSet,
       };
@@ -286,64 +305,6 @@ class App extends Component {
     });
   }
 
-  filterExplicit() {
-    this.setState((prevState, props) => {
-      var newSongSet = prevState.songSet.filter((s) => !s.track.explicit);
-      return { songSet: newSongSet };
-    });
-
-    this.forceUpdate();
-  }
-
-  filterArtist() {
-    var filteredName = this.state.filteredArtist;
-    this.setState((prevState, props) => {
-      console.log(prevState.songSet[0].track.artists[0]);
-      var newSongSet = prevState.songSet.filter(
-        (s) =>
-          s.track.artists[0].name.toLowerCase() != filteredName.toLowerCase()
-      );
-      return { songSet: newSongSet };
-    });
-
-    this.forceUpdate();
-  }
-
-  filterAge(min, max) {
-    var min = this.state.minDate;
-    var max = this.state.maxDate;
-
-    this.setState((prevState, props) => {
-      var newSongSet = prevState.songSet.filter(
-        (s) =>
-          s.track.album.release_date.substring(0, 4) < min ||
-          s.track.album.release_date.substring(0, 4) > max
-      );
-      return { songSet: newSongSet };
-    });
-    this.forceUpdate();
-  }
-
-  filterAdded() {
-    var year = this.state.filteredDate;
-    /*  this.state.songSet.forEach(s => {
-      var rYear = s.track.album.release_date.substring(0,4);
-          if(rYear < min || rYear > max){
-              songs.remove(s);
-          }
-      });   */
-    this.setState((prevState, props) => {
-      console.log(year); //[0].track.album.release_date.substring(0,4));
-      var newSongSet = prevState.songSet.filter((s) => {
-        return parseInt(s.added_at.substring(0, 4)) >= parseInt(year);
-      });
-
-      return { songSet: newSongSet };
-    });
-
-    this.forceUpdate();
-  }
-
   reset(){
     this.setState({
       token: null,
@@ -403,6 +364,7 @@ class App extends Component {
               <div>
                 <PlaylistViewer
                   addSongs = {this.addSongs}
+                  removeSongs = {this.removeSongs}
                   />
                 {/*
                 <h3>Playlists </h3>
