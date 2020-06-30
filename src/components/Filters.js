@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import TextField from "@material-ui/core/TextField";
-import YearSlider from "./YearSlider.js";
 import Slider from "@material-ui/core/Slider";
 
 
@@ -12,7 +11,7 @@ class FilterForm extends React.Component {
 			  filteredArtist: "",
         relDates: [1950, 2020],
         addDates: [2006, 2020],
-        lengths: [0, 10],
+        lengths: [0, 64],
     }
     
     this.handleArtistChange = this.handleArtistChange.bind(this);
@@ -149,7 +148,10 @@ class FilterForm extends React.Component {
                   <Slider
                     ref="length_minutes"
                     min={0}
-                    max={10}
+                    max={6}
+                    step={.3}
+                    scale={(x) => Math.round((2 ** x) * 10)/10}
+                    marks={[1, 2, 3, 4, 10, 20]}
                     value={this.state.lengths}
                     onChange={this.handleLenChange}
                     valueLabelDisplay="auto"
