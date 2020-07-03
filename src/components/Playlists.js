@@ -11,6 +11,7 @@ import ReactTooltip from "react-tooltip";
 import * as $ from "jquery";
 import { authEndpoint, clientId, redirectUri, scopes } from "../config";
 import hash from "../hash";
+import { data } from "jquery";
 
 
 class PlaylistViewer extends React.Component {
@@ -20,6 +21,7 @@ class PlaylistViewer extends React.Component {
 			selectedPlaylists: [],
 			searchedPlaylists: [],
 			unselectedPlaylists: [],
+			previewedPlaylist: [],
 			token: "",
 
 		}
@@ -105,6 +107,10 @@ class PlaylistViewer extends React.Component {
 	}
 
 	removeSelectedPlaylist(playlist, i) {
+		// full trash manuvure
+		// REDO this immediately
+		this.getPlaylistTracks(playlist)
+
 		//add to history and add snapshot of previous
 		this.setState((prevState, props) => {
 		  //remove from selected playlists
@@ -116,7 +122,7 @@ class PlaylistViewer extends React.Component {
 		  placeHolderUnselectedPlaylists.push(playlist);
 	
 		  //remove songs
-			this.props.removeSongs(playlist.getPlaylistTracks());
+			this.props.removeSongs(this.state.previewedPlaylist);
 	
 		  return {
 			selectedPlaylists: placeHolderSelected,
@@ -126,6 +132,29 @@ class PlaylistViewer extends React.Component {
 	
 		this.forceUpdate();
 	}
+
+	getPlaylistTracks(playlist) {
+		//console.log(playlist);
+		var url = "https://api.spotify.com/v1/playlists/" + playlist.id + "/tracks";
+		$.ajax({
+		  url: url,
+		  type: "GET",
+		  beforeSend: (xhr) => {
+			xhr.setRequestHeader("Authorization", "Bearer " + hash.access_token);
+		  },
+		  success: (data) => {
+			if (!data) {
+			  return;
+			}
+			console.log(data.items);
+	
+			this.setState({
+			  previewedPlaylist: data.items,
+			});
+			this.forceUpdate();
+		  },
+		});
+	  }
 
 	showPlaylist(playlist) {
 		this.setState({
@@ -251,27 +280,14 @@ class PlaylistViewer extends React.Component {
 						{playlist.name}
 						</a>
 
-						<ButtonGroup
-						variant="contained"
-						color="primary"
-						aria-label="contained primary button group"
-						className="playlist-button-group"
-						>
-						<Button
-							style={{ backgroundColor: "red" }}
-							onClick={() =>
-							this.removeSelectedPlaylist(playlist, i)
-							}
-						>
-							-
-						</Button>
-						<Button
-							style={{ backgroundColor: "#1DB954" }}
+						<span className="playlist-button-group">
+							<a className="removeButton playlistButton"
+							onClick={() => this.removeSelectedPlaylist(playlist, i)}
+							>-</a>
+							<a className="previewButton playlistButton"
 							onClick={() => this.showPlaylist(playlist)}
-						>
-							≡
-						</Button>
-						</ButtonGroup>
+							>≡</a>
+						</span>
 						<ReactTooltip
 						id={playlist.name}
 						place="right"
@@ -297,7 +313,15 @@ class PlaylistViewer extends React.Component {
 						>
 						{playlist.name}
 						</a>
-
+						<span className="playlist-button-group">
+							<a className="addButton playlistButton"
+							onClick={() => this.addSelectedPlaylist(playlist, i)}
+							>+</a>
+							<a className="previewButton playlistButton"
+							onClick={() => this.showPlaylist(playlist)}
+							>≡</a>
+						</span>
+						{/*
 						<ButtonGroup
 						variant="contained"
 						color="primary"
@@ -320,6 +344,7 @@ class PlaylistViewer extends React.Component {
 							≡
 						</Button>
 						</ButtonGroup>
+						*/}
 						<ReactTooltip
 						id={playlist.name}
 						place="right"

@@ -73,10 +73,14 @@ class FilterForm extends React.Component {
   }
 
   handleAddChange(event, newValues) {
+    console.log(event.type);
     console.log(newValues);
-    this.setState({
-      addDates: newValues,
-    });
+    // hack
+    const minAdded = newValues[0];
+    const maxAdded = newValues[1];
+    this.props.filterSongSet((song) => this.addedBetween(song, minAdded, maxAdded))
+
+    this.setState({addDates: newValues,});
   }
 
   handleMaxAddedChange(event) {
@@ -115,6 +119,7 @@ class FilterForm extends React.Component {
                     onChange={this.handleAddChange}
                     valueLabelDisplay="auto"
                   />
+                  {/*
                   <div className="apply-button">
                     <input
                       type="submit"
@@ -123,6 +128,7 @@ class FilterForm extends React.Component {
                         this.addedBetween(song, this.state.minAdded, this.state.maxAdded))}
                     ></input>
                   </div>
+                      */}
                 </li>
                 <li className="filter-object">
                   Year Released<br></br>

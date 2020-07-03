@@ -342,11 +342,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <h1 className="banner"> The Spotify Toolkit </h1>
-        </header>
         {!this.state.token && (
           <div className="login-button">
+            <header className="App-header">
+              <h1 className="banner"> The Spotify Toolkit </h1>
+            </header>
             <a
               className="btn btn--loginApp-link"
               href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
@@ -366,140 +366,6 @@ class App extends Component {
                   addSongs = {this.addSongs}
                   removeSongs = {this.removeSongs}
                   />
-                {/*
-                <h3>Playlists </h3>
-                <div>
-                  <SearchField
-                    classNames="searchbar"
-                    placeholder="Search for Playlist"
-                    onEnter={(value) => this.search(value)}
-                  />
-
-                  <ul className="playlist-search-list">
-                    {this.state.searchedPlaylists.map(function (playlist, i) {
-                      const creator = playlist.owner;
-                      const songs = playlist.tracks.total;
-                      return (
-                        <button
-                          onClick={() => this.addToPool(playlist)}
-                          className="playlist-button"
-                        >
-                          <li className="playlist-search">
-                            <Chip
-                              label={playlist.name}
-                              style={{ backgroundColor: "#1DB954" }}
-                            />
-                            <Chip label={creator} />
-                            <Chip label={songs} />
-                          </li>
-                        </button>
-                      );
-                    }, this)}
-                  </ul>
-                </div>
-                <ul className="playlist-select-list playlist-selected-list">
-                  {this.state.selectedPlaylists.map(function (playlist, i) {
-                    const creator = playlist.owner;
-                    const songs = playlist.tracks.total;
-                    const test = creator + "\n" + songs + " songs";
-                    return (
-                      <li className="playlist">
-                        {/*
-                        <Chip
-                          label={playlist.name}
-                          style={{ backgroundColor: "#1DB954" }}
-                        />
-                        <Chip label={creator} />
-                        <Chip label={songs} />
-                        <a
-                          data-for={playlist.name}
-                          data-tip={test}
-                          data-iscapture="true"
-                        >
-                          {playlist.name}
-                        </a>
-
-                        <ButtonGroup
-                          variant="contained"
-                          color="primary"
-                          aria-label="contained primary button group"
-                          className="playlist-button-group"
-                        >
-                          <Button
-                            style={{ backgroundColor: "red" }}
-                            onClick={() =>
-                              this.removeSelectedPlaylist(playlist, i)
-                            }
-                          >
-                            -
-                          </Button>
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() => this.showPlaylist(playlist)}
-                          >
-                            ≡
-                          </Button>
-                        </ButtonGroup>
-                        <ReactTooltip
-                          id={playlist.name}
-                          place="right"
-                          type="light"
-                          effect="solid"
-                          multiline={true}
-                        />
-                      </li>
-                    );
-                  }, this)}
-                </ul>
-                <ul class="playlist-select-list">
-                  {this.state.unselectedPlaylists.map(function (playlist, i) {
-                    const creator = "Creator : " + playlist.owner;
-                    const songs = "Playlist Length " + playlist.tracks.total;
-                    const test = creator + "\n" + songs + " songs";
-                    return (
-                      <li className="playlist">
-                        <a
-                          data-for={playlist.name}
-                          data-tip={test}
-                          data-iscapture="true"
-                        >
-                          {playlist.name}
-                        </a>
-
-                        <ButtonGroup
-                          variant="contained"
-                          color="primary"
-                          aria-label="contained primary button group"
-                          className="playlist-button-group"
-                        >
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() =>
-                              this.addSelectedPlaylist(playlist, i)
-                            }
-                          >
-                            +
-                          </Button>
-
-                          <Button
-                            style={{ backgroundColor: "#1DB954" }}
-                            onClick={() => this.showPlaylist(playlist)}
-                          >
-                            ≡
-                          </Button>
-                        </ButtonGroup>
-                        <ReactTooltip
-                          id={playlist.name}
-                          place="right"
-                          type="light"
-                          effect="solid"
-                          multiline={true}
-                        />
-                      </li>
-                    );
-                  }, this)}
-                </ul>
-            */}
               </div>
 
               <div className="venn" id="venn">
@@ -508,6 +374,10 @@ class App extends Component {
               </div>
 
               <div className="songSet">
+                <PlaylistSaver
+                    songSet={this.state.songSet}
+                    reset={this.reset}
+                  />
                 <h3>
                   Current Created Playlist : {this.state.songSet.length} Songs
                 </h3>
@@ -551,16 +421,8 @@ class App extends Component {
                     filterSongSet={this.filterSongSet}
                   />
               </div>
-
-              <div className="savePlaylist">
-                <PlaylistSaver
-                  songSet={this.state.songSet}
-                  reset={this.reset}
-                />
-              </div>
-
             </div>
-
+{/*
             <SpotifyPlayer
               token={this.state.token}
               uris={this.state.uris}
@@ -575,6 +437,7 @@ class App extends Component {
                 trackNameColor: "#fff",
               }}
             />
+            */}
           </div>
         )}
       </div>

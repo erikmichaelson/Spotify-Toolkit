@@ -69,7 +69,7 @@
  }
  
  .playlistPreview {
-   grid-area: d;
+   grid-area: e;
    color:white;
    overflow:scroll;
    height: 520px;
@@ -80,18 +80,18 @@
  }
  
  .songSet {
-   grid-area: e;
+   grid-area: c;
    color:white;
    overflow:scroll;
    height: 520px;
-   width: 50vw;
+   /* width: 50vw; */
    box-shadow: 2px 5px 5px 5px #3d434f;
    text-align: left;
  
  }
  
  .filters {
-   grid-area: c;
+   grid-area: d;
    color:white;
    overflow:scroll;
    height: 100%;
@@ -102,18 +102,18 @@
  }
  
  .savePlaylist {
-   grid-area: f;
+   grid-area: c;
    color:white;
-   overflow:scroll;
-   height: 100%;
+   overflow:hidden;
+   height: 100px;
    width: 20vw;
    box-shadow: 2px 5px 5px 5px #3d434f;
  
  }
  
  #playlist-name{
-   margin-top: 50px;
-   margin-bottom: 50px;
+   color: white;
+   margin: 10px;
  }
  
  
@@ -166,7 +166,18 @@
    position: absolute;
    right:10px;
  }
- 
+
+ .playlistButton {
+  font-weight: bold;
+  margin: 5px;
+ }
+ .playlistButton:hover {
+  cursor: pointer;
+ }
+
+ .addButton { color: green; }
+ .removeButton { color: red; }
+ .previewButton { color: whitesmoke; }
  
  .date {
    background-color:white;

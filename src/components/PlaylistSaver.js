@@ -101,12 +101,13 @@ class PlaylistSaver extends React.Component {
 	render(){
 		return (
 			<div className="savePlaylist">
-        <h3> Create Playlist</h3>
-        <h4>Playlist Name</h4>
         <div id="playlist-name">
           <TextField
+            size="small"
+            borderColor="green"
             value={this.state.playlistName}
-            style={{ backgroundColor: "white" }}
+            // style={{ backgroundColor: "white" }}
+            variant="outlined"
             label="Required"
             onChange={this.handlePlaylistNameOnChange}
           ></TextField>
@@ -115,7 +116,7 @@ class PlaylistSaver extends React.Component {
           style={{ backgroundColor: "#1DB954" }}
           onClick={() => this.savePlaylist()}
         >
-          Save Song Set as Playlist
+          Save
         </Button>
         <ul className="playlist-preview-list"></ul>
       </div>
