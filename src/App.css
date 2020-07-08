@@ -2,7 +2,7 @@
   text-align: center;
   background-color: #282c34;
   min-height: 100vh;
- 
+
  }
  
  .App-header {
@@ -13,6 +13,11 @@
    justify-content: space-between;
    font-size: calc(10px + 2vmin);
    color: white;
+ }
+
+ html {
+  overflow:hidden;
+
  }
  
  h1, h2, h3, h4 {
@@ -28,13 +33,12 @@
  }
  
  .grid-container {
-   margin-top: 0px;
-   margin-left: 15px;
+   margin: 0px 15px;
    display: grid;
  /*  grid-auto-columns: 30%; */
    grid-auto-rows: 50%;
    grid-column-gap: 30px;
-   grid-row-gap: 20px;
+   grid-row-gap: 5px;
  
    grid-template-areas: 
    "a b c"
@@ -47,12 +51,12 @@
    grid-area: a;
    color:white;
    overflow:scroll;
-   height: 520px;
+   height: 50vh;
    width: 20vw;
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   /* box-shadow: 2px 5px 5px 5px #3d434f; */
    position: relative;
    text-align: left;
-   margin-bottom:20px;
+   /* margin-bottom:20px; */
    
  }
  
@@ -60,11 +64,11 @@
    grid-area: b;
    color:white;
    overflow:scroll;
-   height: 520px;
+   height: 50vh;
    width: 50vw;
    border-radius: 10px;
  
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   /* box-shadow: 2px 5px 5px 5px #3d434f; */
    
  }
  
@@ -72,7 +76,7 @@
    grid-area: e;
    color:white;
    overflow:scroll;
-   height: 520px;
+   height: 50vh;
    width: 20vw;
    box-shadow: 2px 5px 5px 5px #3d434f;
    text-align: left;
@@ -83,7 +87,7 @@
    grid-area: c;
    color:white;
    overflow:scroll;
-   height: 520px;
+   height: 50vh;
    /* width: 50vw; */
    box-shadow: 2px 5px 5px 5px #3d434f;
    text-align: left;
@@ -94,7 +98,7 @@
    grid-area: d;
    color:white;
    overflow:scroll;
-   height: 100%;
+   height: 50vh;
    width: 20vw;
    box-shadow: 2px 5px 5px 5px #3d434f;
    text-align: left;
