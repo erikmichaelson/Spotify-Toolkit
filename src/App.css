@@ -1,18 +1,23 @@
+:root {
+  --beige: #faedca;
+  --grey: #4c5760;
+  --turq: 
+}
 .App {
   text-align: center;
-  background-color: #282c34;
+  background-color: var(--beige);
   min-height: 100vh;
 
  }
  
  .App-header {
-   background-color: #282c34;
+   background-color: var(--beige);
    display: flex;
    flex-direction: column;
    align-items: space-between;
    justify-content: space-between;
    font-size: calc(10px + 2vmin);
-   color: white;
+   color: var(--grey);
  }
 
  html {
@@ -49,9 +54,9 @@
  
  .selectedPlaylists {
    grid-area: a;
-   color:white;
+   color: var(--grey);
    overflow:scroll;
-   height: 50vh;
+   height: 49vh;
    width: 20vw;
    /* box-shadow: 2px 5px 5px 5px #3d434f; */
    position: relative;
@@ -62,9 +67,9 @@
  
  .venn {
    grid-area: b;
-   color:white;
+   color: var(--turq);
    overflow:scroll;
-   height: 50vh;
+   height: 49vh;
    width: 50vw;
    border-radius: 10px;
  
@@ -74,49 +79,49 @@
  
  .playlistPreview {
    grid-area: e;
-   color:white;
+   color:var(--grey);
    overflow:scroll;
-   height: 50vh;
+   height: 49vh;
    width: 20vw;
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   box-shadow: 2px 5px 5px 5px var(--grey);
    text-align: left;
  
  }
  
  .songSet {
    grid-area: c;
-   color:white;
+   color:var(--grey);
    overflow:scroll;
-   height: 50vh;
+   height: 49vh;
    /* width: 50vw; */
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   box-shadow: 2px 5px 5px 5px var(--grey);
    text-align: left;
  
  }
  
  .filters {
    grid-area: d;
-   color:white;
+   color:var(--grey);
    overflow:scroll;
-   height: 50vh;
+   height: 49vh;
    width: 20vw;
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   box-shadow: 2px 5px 5px 5px var(--grey);
    text-align: left;
  
  }
  
  .savePlaylist {
    grid-area: c;
-   color:white;
+   color:var(--grey);
    overflow:hidden;
    height: 100px;
    width: 20vw;
-   box-shadow: 2px 5px 5px 5px #3d434f;
+   /* box-shadow: 2px 5px 5px 5px #3d434f; */
  
  }
  
  #playlist-name{
-   color: white;
+   color: var(--grey);
    margin: 10px;
  }
  
@@ -140,7 +145,7 @@
  .playlist-preview-list{
    margin-left: 0;
    margin-right: 0;
-   padding: 10px;
+   padding: 0px 10px;
    text-align: left;
  
  }
@@ -148,8 +153,7 @@
  
  .playlist{
    display: inline-block;
-   margin-top: 20px;
-   margin-bottom: 20px;
+   margin: 5px 0px;
    width: 100%;
    text-align: left;
  
@@ -181,10 +185,10 @@
 
  .addButton { color: green; }
  .removeButton { color: red; }
- .previewButton { color: whitesmoke; }
+ .previewButton { color: var(--grey); }
  
  .date {
-   background-color:white;
+   /* background-color:white; */
    opacity: .8;
  }
  
@@ -259,8 +263,7 @@
     list-style:none;
  }
  
- .song-chip{
-   
+ .song-chip{ 
    margin-left: 10px;
  }
  
@@ -270,5 +273,13 @@
  }
  
  .filter-object{
-   margin-bottom: 12px;
+  margin-bottom: 3px;
+  display: inline-block;
+  width: 100%;
+  padding: 10px 0px;
+ }
+
+ .MuiSlider-root {
+   width: 95% !important;
+   color: rgb(29, 185, 84) !important;
  }

@@ -24,7 +24,7 @@ class FilterForm extends React.Component {
     return !song.track.explicit;
   }
 
-  betweenYears(song, start, end) {
+  relBetween(song, start, end) {
     if(song.track.album.release_date != null){
       const relYear = song.track.album.release_date.substring(0, 4);
       console.log(start, end)
@@ -66,19 +66,14 @@ class FilterForm extends React.Component {
   }
 
   handleRelChange(event, newValues) {
-    console.log(newValues);
-    this.setState({
-      relDates: newValues,
-    });
+    console.log("release: ", this.state.relDates, newValues)
+    this.props.filterSongSet((song) => this.relBetween(song, newValues[0], newValues[1]))
+
+    this.setState({relDates: newValues,});
   }
 
   handleAddChange(event, newValues) {
-    console.log(event.type);
-    console.log(newValues);
-    // hack
-    const minAdded = newValues[0];
-    const maxAdded = newValues[1];
-    this.props.filterSongSet((song) => this.addedBetween(song, minAdded, maxAdded))
+    this.props.filterSongSet((song) => this.addedBetween(song, newValues[0], newValues[1]))
 
     this.setState({addDates: newValues,});
   }
@@ -101,13 +96,13 @@ class FilterForm extends React.Component {
               <ul className="playlist-preview-list">
                 <li className="filter-object">
                   Remove Explicits
-                  <div className="apply-button">
+                  <span className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.props.filterSongSet((song) => this.notExplicit(song))}
                     ></input>
-                  </div>
+                  </span>
                 </li>
                 <li className="filter-object">
                   Year Added<br></br>
@@ -140,14 +135,14 @@ class FilterForm extends React.Component {
                     onChange={this.handleRelChange}
                     valueLabelDisplay="auto"
                   />
-                  <div className="apply-button">
+                  <span className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.props.filterSongSet((song) => 
                         this.betweenYears(song, this.state.relDates[0], this.state.relDates[1]))}
                     ></input>
-                  </div>
+                  </span>
                 </li>
                 <li className="filter-object">
                   Song Length<br></br>
@@ -162,14 +157,14 @@ class FilterForm extends React.Component {
                     onChange={this.handleLenChange}
                     valueLabelDisplay="auto"
                   />
-                  <div className="apply-button">
+                  <span className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.props.filterSongSet((song) => 
                         this.filterLength(song, this.state.lengths[0], this.state.lengths[1]))}
                     ></input>
-                  </div>
+                  </span>
                 </li>
                 <li className="filter-object">
                   Remove Artist
@@ -177,13 +172,13 @@ class FilterForm extends React.Component {
                     className="date"
                     onChange={this.handleArtistChange}
                   />
-                  <div className="apply-button">
+                  <span className="apply-button">
                     <input
                       type="submit"
                       value="Apply"
                       onClick={() => this.props.filterSongSet((song) => this.removeArtist(song, this.state.filteredArtist))}
                       ></input>
-                  </div>
+                  </span>
                 </li>
               </ul>
             </div>
