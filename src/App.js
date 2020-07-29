@@ -13,6 +13,7 @@ import FilterForm from "./components/Filters.js";
 import PlaylistSaver from "./components/PlaylistSaver.js";
 import PlaylistPreview from "./components/Preview.js";
 import PlaylistViewer from "./components/Playlists.js";
+import MediaControlCard from "./components/Player.js";
 
 import "./App.css";
 import TextField from "@material-ui/core/TextField";
@@ -420,6 +421,10 @@ class App extends Component {
                     setSuperState={this.setState}
                     filterSongSet={this.filterSongSet}
                   />
+              </div>
+
+              <div className="player">
+                <MediaControlCard/>
               </div>
             </div>
 {/*

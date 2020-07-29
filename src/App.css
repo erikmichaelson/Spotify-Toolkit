@@ -109,6 +109,13 @@
    text-align: left;
  
  }
+
+.player {
+  grid-area: f;
+  color:var(--grey);
+  overflow:scroll;
+  text-align: left;
+}
  
  .savePlaylist {
    grid-area: c;
